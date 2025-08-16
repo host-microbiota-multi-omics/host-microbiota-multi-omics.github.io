@@ -27,3 +27,7 @@ knitr::opts_chunk$set(
 **Welcome to the Host-Microbiota Multi-Omics Course!**
 
 Contents will be added here.
+
+#(PART) Computation basics {-}
+
+# Snakemake 
