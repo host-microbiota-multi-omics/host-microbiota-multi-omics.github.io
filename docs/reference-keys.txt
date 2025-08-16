@@ -1,0 +1,5 @@
+introduction
+what-is-snakemake
+why-workflow-automation-matters
+problems-snakemake-solves
+relevant-links

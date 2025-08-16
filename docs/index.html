@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Pipeline management with Snakemake</title>
+  <meta name="description" content="Workshop tutorial." />
+  <meta name="generator" content="bookdown 0.41 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Pipeline management with Snakemake" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Workshop tutorial." />
+  <meta name="github-repo" content="alberdilab/snakemake_workshop" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Pipeline management with Snakemake" />
+  
+  <meta name="twitter:description" content="Workshop tutorial." />
+  
+
+<meta name="author" content="Antton Alberdi" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="#introduction"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="#what-is-snakemake"><i class="fa fa-check"></i><b>1.1</b> What is Snakemake?</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="#why-workflow-automation-matters"><i class="fa fa-check"></i><b>1.2</b> Why Workflow Automation Matters</a></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="#problems-snakemake-solves"><i class="fa fa-check"></i><b>1.3</b> Problems Snakemake Solves</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="#relevant-links"><i class="fa fa-check"></i><b>1.4</b> Relevant links</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Pipeline management with Snakemake</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="header">
+<h1 class="title">Pipeline management with Snakemake</h1>
+<h2 class="subtitle"><em>Section for Hologenomics Workshop</em></h2>
+<p class="author"><em>Antton Alberdi<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></em></p>
+<p class="date"><em>Last update: 2025-08-16</em></p>
+</div>
+<div id="introduction" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">Chapter 1</span> Introduction<a href="#introduction" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p><strong>Welcome to the Snakemake Workshop!</strong></p>
+<p>In this session, we’ll explore how Snakemake can help you build scalable, reproducible, and automated workflows for data analysis. You’ll learn how to define tasks as rules, manage dependencies, and take full advantage of parallel execution on a high-performance cluster. By the end, you’ll be able to design workflows that are not only efficient, but also easy to share and reproduce.</p>
+<div id="what-is-snakemake" class="section level2 hasAnchor" number="1.1">
+<h2><span class="header-section-number">1.1</span> What is Snakemake?<a href="#what-is-snakemake" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Snakemake is a workflow management system that helps you automate and organize complex data processing tasks. Instead of manually running each step of an analysis in the correct order, you describe what needs to be done, the inputs it requires, and the outputs it should produce. Snakemake then determines the correct execution order, runs tasks in parallel where possible, and ensures that only the necessary steps are re-run when data or code changes.</p>
+<p>This approach makes your work more efficient, reproducible, and less prone to errors, whether you are working on a single computer or a high-performance computing cluster. In simple terms, it is like providing your computer with a detailed recipe: each step knows exactly which ingredients it needs, what it produces, and when it needs to be executed.</p>
+</div>
+<div id="why-workflow-automation-matters" class="section level2 hasAnchor" number="1.2">
+<h2><span class="header-section-number">1.2</span> Why Workflow Automation Matters<a href="#why-workflow-automation-matters" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li><strong>Reproducibility:</strong> In research and data-driven projects, results must be repeatable. Automation ensures that the same steps produce the same results every time, regardless of who runs them or where they are run.</li>
+<li><strong>Efficiency:</strong> Automated workflows save time by eliminating repetitive manual commands and by re-running only the parts of an analysis that have changed.</li>
+<li><strong>Error Reduction:</strong> Manual execution increases the risk of skipping steps, running them in the wrong order, or using outdated files. Automation enforces the correct sequence and data flow.</li>
+<li><strong>Scalability:</strong> As projects grow, the number of steps and datasets can become unmanageable. Automated workflows make it practical to handle dozens or hundreds of tasks reliably.</li>
+<li><strong>Documentation by Design:</strong> A well-defined workflow doubles as a detailed record of the entire analysis process, which is invaluable for collaboration, review, and publication.</li>
+</ul>
+</div>
+<div id="problems-snakemake-solves" class="section level2 hasAnchor" number="1.3">
+<h2><span class="header-section-number">1.3</span> Problems Snakemake Solves<a href="#problems-snakemake-solves" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li><strong>Managing Complex Dependenciess:</strong> Snakemake automatically determines which steps depend on which others and runs them in the right order without manual intervention.</li>
+<li><strong>Avoiding Unnecessary Work:</strong> It detects when inputs or code have changed and re-runs only the affected steps, saving both time and computing resources.</li>
+<li><strong>Portability Across Systems:</strong> The same workflow can run unchanged on a laptop, a high-performance computing cluster, or even the cloud.</li>
+<li><strong>Parallel Execution Without Extra Effort:</strong> Snakemake can execute independent tasks simultaneously, using all available cores or cluster nodes.</li>
+<li><strong>Reproducibility and Transparency:</strong> By defining workflows in a readable text format, Snakemake makes analyses easy to share, inspect, and reproduce years later.</li>
+</ul>
+</div>
+<div id="relevant-links" class="section level2 hasAnchor" number="1.4">
+<h2><span class="header-section-number">1.4</span> Relevant links<a href="#relevant-links" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li>Official Snakemake website: <a href="https://snakemake.github.io" class="uri">https://snakemake.github.io</a></li>
+<li>Snakemake documentation: <a href="https://snakemake.readthedocs.io" class="uri">https://snakemake.readthedocs.io</a></li>
+<li>Tutorial with examples: <a href="https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html" class="uri">https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html</a></li>
+<li>Workflow examples: <a href="https://github.com/snakemake-workflows" class="uri">https://github.com/snakemake-workflows</a></li>
+</ul>
+
+</div>
+</div>
+
+
+
+
+
+
+<div class="footnotes">
+<hr />
+<ol start="1">
+<li id="fn1"><p>University of Copenhagen, <a href="mailto:ostaizka.aizpurua@sund.ku.dk" class="email">ostaizka.aizpurua@sund.ku.dk</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
