@@ -1,6 +1,8 @@
 # Host-microbiota multi-omics
 
-Main repository of the course
+Main repository of the computational exercises of the course
+
+[host-microbiota-multi-omics.github.io/host-microbiota-multi-omics/](https://host-microbiota-multi-omics.github.io/host-microbiota-multi-omics/)
 
 ## Render webook
 
