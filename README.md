@@ -2,7 +2,7 @@
 
 Main repository of the computational exercises of the course
 
-[host-microbiota-multi-omics.github.io/host-microbiota-multi-omics/](https://host-microbiota-multi-omics.github.io/host-microbiota-multi-omics/)
+[host-microbiota-multi-omics.github.io](https://host-microbiota-multi-omics.github.io)
 
 ## Render webook
 

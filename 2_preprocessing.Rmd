@@ -1,6 +1,8 @@
-# (PART) Data preprocessing {-}
+# (PART) Data processing {-}
 
-# Quality filtering
+# Preprocessing
+
+## Quality filtering
 
 This rule performs the first major preprocessing step in the workflow: quality-control, trimming, and filtering of raw paired-end sequencing reads using fastp. It takes each sample’s raw FASTQ files and removes adapters, trims low-quality bases, filters out low-complexity or artifact-rich reads (including common NovaSeq poly-G/X issues), and outputs cleaned read pairs. These cleaned FASTQ files form the high-quality input for all downstream host–microbiota analyses, ensuring that later steps—such as host-read removal, taxonomic profiling, or assembly—are not biased by sequencing artifacts.
 
@@ -36,7 +38,7 @@ rule fastp:
         """
 ```
 
-# Host mapping
+## Host mapping
 
 This rule prepares a reference genome so it can be efficiently used for read alignment with Bowtie2. It takes a FASTA file for a given host genome and runs bowtie2-build to generate the index files that Bowtie2 requires for fast and accurate mapping. Only one of the produced index files is listed as the output, but the command generates the full set of Bowtie2 index components. This indexing step is essential because alignment tools rely on these precomputed structures to rapidly search the genome during mapping.
 
@@ -58,7 +60,7 @@ rule reference_index:
         """
 ```
 
-# Host genome mapping
+## Host genome mapping
 
 This rule maps each sample’s quality-filtered paired-end reads to its corresponding reference genome using Bowtie2, producing a sorted BAM file that is ready for downstream analyses such as host read removal, quantification, or coverage estimation. It uses the Bowtie2 index generated in the previous step and the cleaned FASTQ files from fastp as inputs. The mapping is performed with multiple threads for efficiency, and the output is streamed directly into samtools to convert the SAM alignment to BAM format and sort it in a single streamlined command.
 
@@ -84,7 +86,7 @@ rule reference_map:
         """
 ```
 
-# Mapping statistics
+## Mapping statistics
 
 This rule computes alignment quality and summary statistics for each sorted BAM file generated during mapping. Using several samtools subcommands, it produces metrics that describe how well the reads aligned to the reference genome—information essential for evaluating host-read removal efficiency, assessing sequencing quality, and feeding into MultiQC reports. The BAM file is indexed to enable rapid random access, while flagstat, idxstats, and stats each provide different levels of summary: overall alignment rates, per-reference sequence counts, and more detailed alignment metrics.
 
@@ -109,7 +111,7 @@ rule samtools_stats:
         """
 ```
 
-# Host-microbiota split
+## Host-microbiota split
 
 This rule takes the aligned BAM file and separates mapped and unmapped read pairs, effectively splitting host-origin reads from metagenomic reads. Unmapped reads (i.e., those that did not align to the host reference) are extracted and converted back into paired FASTQ files, forming the metagenomic read set used for downstream microbiome profiling or assembly. At the same time, mapped reads are retained in a host-only BAM file, which can be used for host genomics analyses or simply for quality assessment.
 
