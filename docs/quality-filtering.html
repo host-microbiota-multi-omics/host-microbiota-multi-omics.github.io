@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | Host-Microbiota Multi-Omics</title>
+  <title>Chapter 7 Quality filtering | Host-Microbiota Multi-Omics</title>
   <meta name="description" content="&lt;p&gt;Workshop tutorial.&lt;/p&gt;" />
   <meta name="generator" content="bookdown 0.41 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | Host-Microbiota Multi-Omics" />
+  <meta property="og:title" content="Chapter 7 Quality filtering | Host-Microbiota Multi-Omics" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="&lt;p&gt;Workshop tutorial.&lt;/p&gt;" />
   <meta name="github-repo" content="host-microbiota-multi-omics/host-microbiota-multi-omics.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | Host-Microbiota Multi-Omics" />
+  <meta name="twitter:title" content="Chapter 7 Quality filtering | Host-Microbiota Multi-Omics" />
   
   <meta name="twitter:description" content="&lt;p&gt;Workshop tutorial.&lt;/p&gt;" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="course-environment.html"/>
+<link rel="next" href="host-mapping.html"/>
 
 
 
@@ -2083,19 +2083,45 @@ color: #a52929;
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="quality-filtering" class="section level1 hasAnchor" number="7">
+<h1><span class="header-section-number">Chapter 7</span> Quality filtering<a href="quality-filtering.html#quality-filtering" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>This rule performs the first major preprocessing step in the workflow: quality-control, trimming, and filtering of raw paired-end sequencing reads using fastp. It takes each sample’s raw FASTQ files and removes adapters, trims low-quality bases, filters out low-complexity or artifact-rich reads (including common NovaSeq poly-G/X issues), and outputs cleaned read pairs. These cleaned FASTQ files form the high-quality input for all downstream host–microbiota analyses, ensuring that later steps—such as host-read removal, taxonomic profiling, or assembly—are not biased by sequencing artifacts.</p>
+<p>In addition to generating cleaned reads, the rule produces HTML and JSON quality-control reports summarizing read quality before and after processing. The rule also handles software environment setup through module loading and scales memory/runtime requirements automatically based on the size of the input files, making it robust on HPC systems.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb5-1"><a href="quality-filtering.html#cb5-1" tabindex="-1"></a><span class="ex">rule</span> fastp:</span>
+<span id="cb5-2"><a href="quality-filtering.html#cb5-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
+<span id="cb5-3"><a href="quality-filtering.html#cb5-3" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/reads/{{sample}}_1.fq.gz&quot;</span>,</span>
+<span id="cb5-4"><a href="quality-filtering.html#cb5-4" tabindex="-1"></a>        <span class="va">r2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/reads/{{sample}}_2.fq.gz&quot;</span></span>
+<span id="cb5-5"><a href="quality-filtering.html#cb5-5" tabindex="-1"></a>    <span class="ex">output:</span></span>
+<span id="cb5-6"><a href="quality-filtering.html#cb5-6" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_1.fq.gz&quot;</span>,</span>
+<span id="cb5-7"><a href="quality-filtering.html#cb5-7" tabindex="-1"></a>        <span class="va">r2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_2.fq.gz&quot;</span>,</span>
+<span id="cb5-8"><a href="quality-filtering.html#cb5-8" tabindex="-1"></a>        <span class="va">html</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}.html&quot;</span>,</span>
+<span id="cb5-9"><a href="quality-filtering.html#cb5-9" tabindex="-1"></a>        <span class="va">json</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}.json&quot;</span></span>
+<span id="cb5-10"><a href="quality-filtering.html#cb5-10" tabindex="-1"></a>    <span class="ex">shell:</span></span>
+<span id="cb5-11"><a href="quality-filtering.html#cb5-11" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb5-12"><a href="quality-filtering.html#cb5-12" tabindex="-1"></a><span class="st">        module load {params.fastp_module}</span></span>
+<span id="cb5-13"><a href="quality-filtering.html#cb5-13" tabindex="-1"></a><span class="st">        fastp </span><span class="dt">\</span></span>
+<span id="cb5-14"><a href="quality-filtering.html#cb5-14" tabindex="-1"></a><span class="st">            --in1 {input.r1} --in2 {input.r2} </span><span class="dt">\</span></span>
+<span id="cb5-15"><a href="quality-filtering.html#cb5-15" tabindex="-1"></a><span class="st">            --out1 {output.r1} --out2 {output.r2} </span><span class="dt">\</span></span>
+<span id="cb5-16"><a href="quality-filtering.html#cb5-16" tabindex="-1"></a><span class="st">            --trim_poly_g </span><span class="dt">\</span></span>
+<span id="cb5-17"><a href="quality-filtering.html#cb5-17" tabindex="-1"></a><span class="st">            --trim_poly_x </span><span class="dt">\</span></span>
+<span id="cb5-18"><a href="quality-filtering.html#cb5-18" tabindex="-1"></a><span class="st">            --low_complexity_filter </span><span class="dt">\</span></span>
+<span id="cb5-19"><a href="quality-filtering.html#cb5-19" tabindex="-1"></a><span class="st">            --n_base_limit 5 </span><span class="dt">\</span></span>
+<span id="cb5-20"><a href="quality-filtering.html#cb5-20" tabindex="-1"></a><span class="st">            --qualified_quality_phred 20 </span><span class="dt">\</span></span>
+<span id="cb5-21"><a href="quality-filtering.html#cb5-21" tabindex="-1"></a><span class="st">            --length_required 60 </span><span class="dt">\</span></span>
+<span id="cb5-22"><a href="quality-filtering.html#cb5-22" tabindex="-1"></a><span class="st">            --thread {threads} </span><span class="dt">\</span></span>
+<span id="cb5-23"><a href="quality-filtering.html#cb5-23" tabindex="-1"></a><span class="st">            --html {output.html} </span><span class="dt">\</span></span>
+<span id="cb5-24"><a href="quality-filtering.html#cb5-24" tabindex="-1"></a><span class="st">            --json {output.json} </span><span class="dt">\</span></span>
+<span id="cb5-25"><a href="quality-filtering.html#cb5-25" tabindex="-1"></a><span class="st">            --adapter_sequence AGATCGGAAGAGCACACGTCTGAACTCCAGTCA </span><span class="dt">\</span></span>
+<span id="cb5-26"><a href="quality-filtering.html#cb5-26" tabindex="-1"></a><span class="st">            --adapter_sequence_r2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT</span></span>
+<span id="cb5-27"><a href="quality-filtering.html#cb5-27" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="course-environment.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="host-mapping.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script>/*! jQuery v3.6.0 | (c) OpenJS Foundation and other contributors | jquery.org/license */

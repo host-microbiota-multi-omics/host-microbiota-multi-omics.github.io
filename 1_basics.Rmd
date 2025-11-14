@@ -1,0 +1,109 @@
+# (PART) Computation basics {-}
+
+# Getting ready
+
+## Get Visual Studio Code ready
+
+Visual Studio Code (VS Code) is a lightweight, cross-platform code editor developed by Microsoft. It’s free, open source, and supports a wide range of programming languages.
+
+1. Download Visual studio code: https://code.visualstudio.com/download
+2. Using the extension manager, install the following plugins:
+- **Python** by Microsoft
+- **Snakemake Language** by Snakemake
+- **Remote - SSH** by Microsoft
+- **Remote Explorer** by Microsoft
+
+## Create a SSH connection to Mjolnir
+
+1. Ensure you are connected to the KU VPN
+2. Menu: View > Command Palette > Remote-SSH: Connect to Host
+3. + Add New SSH Host
+4. ssh mjolnirgate.unicph.domain
+5. Type password
+
+This should have created a SSH connection to Mjolnir, which will enable you to create a Remote Explorewr.
+
+## Open the remote explorer
+
+1. Explorer
+2. Connect to remote > Open Folder
+3. Use the following path: /maps/projects/course_2/people/{ku-id}
+
+# Command line basics
+
+# High Performance Computation 
+
+## Modules
+
+We will need to load two key modules to run the workshop. If you have your own conda, consider deactivating it temporarily to ensure the exercises run smoothly.
+
+```{sh eval=FALSE}
+# Ensure there is nothing loaded
+module purge
+
+# Load the relevant modules
+module load snakemake/9.4.0
+module load miniconda/py39_23.1
+
+# List the loaded modules
+module list
+```
+
+Use should see exactly this:
+
+```
+Currently Loaded Modulefiles:
+ 1) miniconda/py39_23.1   2) snakemake/9.4.0
+```
+
+## Screen 
+
+Screen is a simple tool that keeps your command-line session running on a server even if your internet drops or you close your laptop. Think of it like putting your terminal in a locker—you can step away and later unlock it to find everything exactly where you left it. It also lets you make several “tabs” (windows) inside one SSH login and switch between them. On HPC clusters where tasks can run for hours, starting them inside Screen keeps them safe and easy to rejoin. It’s lightweight and saves you from losing work.
+
+To create a screen session for the entire duration of the workshop:
+
+```{sh eval=FALSE}
+screen -S hmmo_screen
+```
+
+To get out from the session, you must type `ctrl+a d`
+
+To re-enter the session, simply:
+
+```{sh eval=FALSE}
+screen -r hmmo_screen
+```
+
+And to close the session, just type `exit`.
+
+## SLURM 
+
+# Snakemake 
+
+# Course environment
+
+The computational exercises of the course will be conducted in the following project in Mjolnir:
+
+> /projects/course_1
+
+You can access it using `cd /projects/course_1` or visualise its contents using `ls -lah /projects/course_1`.
+
+This directory contains four folders:
+
+- **apps:** it contains the snakemake pipelines you will use for processing the samples.
+- **data:** it contains the raw data to be used in the exercises.
+- **people:** it contains the folders of the individual users where your personal data will be stored. 
+- **scratch:** some software will use this directory to store temporary data.
+
+## Your directory
+
+This is the directory that can be accessed and edited by each user. All the computed files will be stored here. To access your directory you need to know your ku-id. 
+
+> /projects/course_1/people/{ku-id}
+
+## Raw data
+
+The raw data for the different studies that will be used in the course are found in different folders within the `data` director:
+
+> /projects/course_1/data/lizards
+> /projects/course_1/data/corvids

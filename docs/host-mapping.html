@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | Host-Microbiota Multi-Omics</title>
+  <title>Chapter 8 Host mapping | Host-Microbiota Multi-Omics</title>
   <meta name="description" content="&lt;p&gt;Workshop tutorial.&lt;/p&gt;" />
   <meta name="generator" content="bookdown 0.41 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | Host-Microbiota Multi-Omics" />
+  <meta property="og:title" content="Chapter 8 Host mapping | Host-Microbiota Multi-Omics" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="&lt;p&gt;Workshop tutorial.&lt;/p&gt;" />
   <meta name="github-repo" content="host-microbiota-multi-omics/host-microbiota-multi-omics.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | Host-Microbiota Multi-Omics" />
+  <meta name="twitter:title" content="Chapter 8 Host mapping | Host-Microbiota Multi-Omics" />
   
   <meta name="twitter:description" content="&lt;p&gt;Workshop tutorial.&lt;/p&gt;" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="quality-filtering.html"/>
+<link rel="next" href="host-genome-mapping.html"/>
 
 
 
@@ -2083,19 +2083,31 @@ color: #a52929;
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="host-mapping" class="section level1 hasAnchor" number="8">
+<h1><span class="header-section-number">Chapter 8</span> Host mapping<a href="host-mapping.html#host-mapping" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>This rule prepares a reference genome so it can be efficiently used for read alignment with Bowtie2. It takes a FASTA file for a given host genome and runs bowtie2-build to generate the index files that Bowtie2 requires for fast and accurate mapping. Only one of the produced index files is listed as the output, but the command generates the full set of Bowtie2 index components. This indexing step is essential because alignment tools rely on these precomputed structures to rapidly search the genome during mapping.</p>
+<p>In addition to building the index, the rule also saves a copy of the reference FASTA alongside the index under a standardized naming scheme, ensuring consistency for downstream processes that expect the reference to be colocated with its index. The rule loads the appropriate Bowtie2 module and includes adaptive memory and runtime estimation based on the size of the reference genome, making it robust for small microbial genomes as well as larger host genomes.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb6-1"><a href="host-mapping.html#cb6-1" tabindex="-1"></a><span class="ex">rule</span> reference_index:</span>
+<span id="cb6-2"><a href="host-mapping.html#cb6-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
+<span id="cb6-3"><a href="host-mapping.html#cb6-3" tabindex="-1"></a>        <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/data/references/{{reference}}.fna&quot;</span></span>
+<span id="cb6-4"><a href="host-mapping.html#cb6-4" tabindex="-1"></a>    <span class="ex">output:</span></span>
+<span id="cb6-5"><a href="host-mapping.html#cb6-5" tabindex="-1"></a>        <span class="va">index</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/references/{{reference}}.rev.1.bt2&quot;</span></span>
+<span id="cb6-6"><a href="host-mapping.html#cb6-6" tabindex="-1"></a>    <span class="ex">params:</span></span>
+<span id="cb6-7"><a href="host-mapping.html#cb6-7" tabindex="-1"></a>        <span class="va">basename</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/references/{{reference}}&quot;</span></span>
+<span id="cb6-8"><a href="host-mapping.html#cb6-8" tabindex="-1"></a>    <span class="ex">shell:</span></span>
+<span id="cb6-9"><a href="host-mapping.html#cb6-9" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb6-10"><a href="host-mapping.html#cb6-10" tabindex="-1"></a><span class="st">        module load {params.bowtie2_module}</span></span>
+<span id="cb6-11"><a href="host-mapping.html#cb6-11" tabindex="-1"></a><span class="st">        bowtie2-build {input} {params.basename}</span></span>
+<span id="cb6-12"><a href="host-mapping.html#cb6-12" tabindex="-1"></a><span class="st">        cat {input} &gt; {params.basename}.fna</span></span>
+<span id="cb6-13"><a href="host-mapping.html#cb6-13" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="quality-filtering.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="host-genome-mapping.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script>/*! jQuery v3.6.0 | (c) OpenJS Foundation and other contributors | jquery.org/license */

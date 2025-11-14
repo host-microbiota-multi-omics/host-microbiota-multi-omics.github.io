@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | Host-Microbiota Multi-Omics</title>
+  <title>Chapter 11 Host-microbiota split | Host-Microbiota Multi-Omics</title>
   <meta name="description" content="&lt;p&gt;Workshop tutorial.&lt;/p&gt;" />
   <meta name="generator" content="bookdown 0.41 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | Host-Microbiota Multi-Omics" />
+  <meta property="og:title" content="Chapter 11 Host-microbiota split | Host-Microbiota Multi-Omics" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="&lt;p&gt;Workshop tutorial.&lt;/p&gt;" />
   <meta name="github-repo" content="host-microbiota-multi-omics/host-microbiota-multi-omics.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | Host-Microbiota Multi-Omics" />
+  <meta name="twitter:title" content="Chapter 11 Host-microbiota split | Host-Microbiota Multi-Omics" />
   
   <meta name="twitter:description" content="&lt;p&gt;Workshop tutorial.&lt;/p&gt;" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="mapping-statistics.html"/>
+<link rel="next" href="sketching.html"/>
 
 
 
@@ -2083,19 +2083,43 @@ color: #a52929;
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="host-microbiota-split" class="section level1 hasAnchor" number="11">
+<h1><span class="header-section-number">Chapter 11</span> Host-microbiota split<a href="host-microbiota-split.html#host-microbiota-split" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>This rule takes the aligned BAM file and separates mapped and unmapped read pairs, effectively splitting host-origin reads from metagenomic reads. Unmapped reads (i.e., those that did not align to the host reference) are extracted and converted back into paired FASTQ files, forming the metagenomic read set used for downstream microbiome profiling or assembly. At the same time, mapped reads are retained in a host-only BAM file, which can be used for host genomics analyses or simply for quality assessment.</p>
+<p>In addition to generating the split read files, the rule also counts how many reads and how many total bases fall into the metagenomic vs. host categories. These summary files are useful for evaluating host contamination, sequencing depth distribution, and the overall success of the host-depletion strategy. The process relies on samtools to filter BAM records by mapping flags and uses simple awk commands to tally base counts, making it a compact but crucial step in workflows that jointly analyze host and microbiota data.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb9-1"><a href="host-microbiota-split.html#cb9-1" tabindex="-1"></a><span class="ex">rule</span> split_reads:</span>
+<span id="cb9-2"><a href="host-microbiota-split.html#cb9-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
+<span id="cb9-3"><a href="host-microbiota-split.html#cb9-3" tabindex="-1"></a>        <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/preprocessing/bowtie2/{{sample}}.bam&quot;</span></span>
+<span id="cb9-4"><a href="host-microbiota-split.html#cb9-4" tabindex="-1"></a>    <span class="ex">output:</span></span>
+<span id="cb9-5"><a href="host-microbiota-split.html#cb9-5" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}_1.fq.gz&quot;</span>,</span>
+<span id="cb9-6"><a href="host-microbiota-split.html#cb9-6" tabindex="-1"></a>        <span class="va">r2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}_2.fq.gz&quot;</span>,</span>
+<span id="cb9-7"><a href="host-microbiota-split.html#cb9-7" tabindex="-1"></a>        <span class="va">metareads</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.metareads&quot;</span>,</span>
+<span id="cb9-8"><a href="host-microbiota-split.html#cb9-8" tabindex="-1"></a>        <span class="va">metabases</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.metabases&quot;</span>,</span>
+<span id="cb9-9"><a href="host-microbiota-split.html#cb9-9" tabindex="-1"></a>        <span class="va">bam</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.bam&quot;</span>,</span>
+<span id="cb9-10"><a href="host-microbiota-split.html#cb9-10" tabindex="-1"></a>        <span class="va">hostreads</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.hostreads&quot;</span>,</span>
+<span id="cb9-11"><a href="host-microbiota-split.html#cb9-11" tabindex="-1"></a>        <span class="va">hostbases</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.hostbases&quot;</span></span>
+<span id="cb9-12"><a href="host-microbiota-split.html#cb9-12" tabindex="-1"></a>    <span class="ex">shell:</span></span>
+<span id="cb9-13"><a href="host-microbiota-split.html#cb9-13" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb9-14"><a href="host-microbiota-split.html#cb9-14" tabindex="-1"></a><span class="st">        module load {params.bowtie2_module} {params.samtools_module}</span></span>
+<span id="cb9-15"><a href="host-microbiota-split.html#cb9-15" tabindex="-1"></a><span class="st">        samtools view -b -f12 -@ {threads} {input} | samtools fastq -@ {threads} -1 {output.r1} -2 {output.r2} -</span></span>
+<span id="cb9-16"><a href="host-microbiota-split.html#cb9-16" tabindex="-1"></a><span class="st">        samtools view -b -f12 -@ {threads} {input} | samtools view -c - &gt; {output.metareads}</span></span>
+<span id="cb9-17"><a href="host-microbiota-split.html#cb9-17" tabindex="-1"></a><span class="st">        samtools view -f12 -@ {threads} {input} | awk &#39;{{sum += length(</span><span class="va">$1</span><span class="st">0)}} END {{print sum}}&#39; &gt; {output.metabases}</span></span>
+<span id="cb9-18"><a href="host-microbiota-split.html#cb9-18" tabindex="-1"></a><span class="st">        samtools view -b -F12 -@ {threads} {input} | samtools sort -@ {threads} -o {output.bam} -</span></span>
+<span id="cb9-19"><a href="host-microbiota-split.html#cb9-19" tabindex="-1"></a><span class="st">        samtools view -b -F12 -@ {threads} {input} | samtools view -c - &gt; {output.hostreads}</span></span>
+<span id="cb9-20"><a href="host-microbiota-split.html#cb9-20" tabindex="-1"></a><span class="st">        samtools view -F12 -@ {threads} {input} | awk &#39;{{sum += length(</span><span class="va">$1</span><span class="st">0)}} END {{print sum}}&#39; &gt; {output.hostbases}</span></span>
+<span id="cb9-21"><a href="host-microbiota-split.html#cb9-21" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
+
 </div>
+
+
+
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="mapping-statistics.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="sketching.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script>/*! jQuery v3.6.0 | (c) OpenJS Foundation and other contributors | jquery.org/license */

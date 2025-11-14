@@ -1,0 +1,140 @@
+# (PART) Data preprocessing {-}
+
+# Quality filtering
+
+This rule performs the first major preprocessing step in the workflow: quality-control, trimming, and filtering of raw paired-end sequencing reads using fastp. It takes each sample’s raw FASTQ files and removes adapters, trims low-quality bases, filters out low-complexity or artifact-rich reads (including common NovaSeq poly-G/X issues), and outputs cleaned read pairs. These cleaned FASTQ files form the high-quality input for all downstream host–microbiota analyses, ensuring that later steps—such as host-read removal, taxonomic profiling, or assembly—are not biased by sequencing artifacts.
+
+In addition to generating cleaned reads, the rule produces HTML and JSON quality-control reports summarizing read quality before and after processing. The rule also handles software environment setup through module loading and scales memory/runtime requirements automatically based on the size of the input files, making it robust on HPC systems.
+
+```{sh eval=FALSE}
+rule fastp:
+    input:
+        r1=f"{OUTPUT_DIR}/data/reads/{{sample}}_1.fq.gz",
+        r2=f"{OUTPUT_DIR}/data/reads/{{sample}}_2.fq.gz"
+    output:
+        r1=f"{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_1.fq.gz",
+        r2=f"{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_2.fq.gz",
+        html=f"{OUTPUT_DIR}/preprocessing/fastp/{{sample}}.html",
+        json=f"{OUTPUT_DIR}/preprocessing/fastp/{{sample}}.json"
+    shell:
+        """
+        module load {params.fastp_module}
+        fastp \
+            --in1 {input.r1} --in2 {input.r2} \
+            --out1 {output.r1} --out2 {output.r2} \
+            --trim_poly_g \
+            --trim_poly_x \
+            --low_complexity_filter \
+            --n_base_limit 5 \
+            --qualified_quality_phred 20 \
+            --length_required 60 \
+            --thread {threads} \
+            --html {output.html} \
+            --json {output.json} \
+            --adapter_sequence AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \
+            --adapter_sequence_r2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT
+        """
+```
+
+# Host mapping
+
+This rule prepares a reference genome so it can be efficiently used for read alignment with Bowtie2. It takes a FASTA file for a given host genome and runs bowtie2-build to generate the index files that Bowtie2 requires for fast and accurate mapping. Only one of the produced index files is listed as the output, but the command generates the full set of Bowtie2 index components. This indexing step is essential because alignment tools rely on these precomputed structures to rapidly search the genome during mapping.
+
+In addition to building the index, the rule also saves a copy of the reference FASTA alongside the index under a standardized naming scheme, ensuring consistency for downstream processes that expect the reference to be colocated with its index. The rule loads the appropriate Bowtie2 module and includes adaptive memory and runtime estimation based on the size of the reference genome, making it robust for small microbial genomes as well as larger host genomes.
+
+```{sh eval=FALSE}
+rule reference_index:
+    input:
+        f"{OUTPUT_DIR}/data/references/{{reference}}.fna"
+    output:
+        index=f"{OUTPUT_DIR}/data/references/{{reference}}.rev.1.bt2"
+    params:
+        basename=f"{OUTPUT_DIR}/data/references/{{reference}}"
+    shell:
+        """
+        module load {params.bowtie2_module}
+        bowtie2-build {input} {params.basename}
+        cat {input} > {params.basename}.fna
+        """
+```
+
+# Host genome mapping
+
+This rule maps each sample’s quality-filtered paired-end reads to its corresponding reference genome using Bowtie2, producing a sorted BAM file that is ready for downstream analyses such as host read removal, quantification, or coverage estimation. It uses the Bowtie2 index generated in the previous step and the cleaned FASTQ files from fastp as inputs. The mapping is performed with multiple threads for efficiency, and the output is streamed directly into samtools to convert the SAM alignment to BAM format and sort it in a single streamlined command.
+
+By linking each sample to its appropriate reference through SAMPLE_TO_REFERENCE, the rule flexibly supports host–microbiota workflows where different samples may require different reference genomes. Memory and runtime are scaled according to the size of the input reads, ensuring robust performance across varied dataset sizes. The result is a properly formatted, sorted BAM file that downstream tools can use without additional preprocessing.
+
+```{sh eval=FALSE}
+rule reference_map:
+    input:
+        index=lambda wildcards: expand(
+            f"{OUTPUT_DIR}/data/references/{{reference}}.rev.1.bt2",
+            reference=[SAMPLE_TO_REFERENCE[wildcards.sample]]
+        ),
+        r1=f"{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_1.fq.gz",
+        r2=f"{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_2.fq.gz"
+    output:
+        f"{OUTPUT_DIR}/preprocessing/bowtie2/{{sample}}.bam"
+    params:
+        basename=lambda wildcards: f"{OUTPUT_DIR}/data/references/{SAMPLE_TO_REFERENCE[wildcards.sample]}"
+    shell:
+        """
+        module load {params.bowtie2_module} {params.samtools_module}
+        bowtie2 -x {params.basename} -1 {input.r1} -2 {input.r2} -p {threads} | samtools view -bS - | samtools sort -o {output}
+        """
+```
+
+# Mapping statistics
+
+This rule computes alignment quality and summary statistics for each sorted BAM file generated during mapping. Using several samtools subcommands, it produces metrics that describe how well the reads aligned to the reference genome—information essential for evaluating host-read removal efficiency, assessing sequencing quality, and feeding into MultiQC reports. The BAM file is indexed to enable rapid random access, while flagstat, idxstats, and stats each provide different levels of summary: overall alignment rates, per-reference sequence counts, and more detailed alignment metrics.
+
+All these outputs are written into a dedicated samtools directory and follow a consistent naming structure, making them easy to collect later for QC visualization and downstream processing. The rule loads the necessary samtools module and uses light computational resources, since generating these QC summaries is relatively inexpensive compared to alignment.
+
+```{sh eval=FALSE}
+rule samtools_stats:
+    input:
+        rules.reference_map.output
+    output:
+        bai      = f"{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.bam.bai",
+        flagstat = f"{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.flagstat.txt",
+        idxstats = f"{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.idxstats.txt",
+        stats    = f"{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.stats.txt"
+    shell:
+        """
+        module load {params.samtools_module}
+        samtools index {input} {output.bai}
+        samtools flagstat {input} > {output.flagstat}
+        samtools idxstats {input} > {output.idxstats}
+        samtools stats {input} > {output.stats}
+        """
+```
+
+# Host-microbiota split
+
+This rule takes the aligned BAM file and separates mapped and unmapped read pairs, effectively splitting host-origin reads from metagenomic reads. Unmapped reads (i.e., those that did not align to the host reference) are extracted and converted back into paired FASTQ files, forming the metagenomic read set used for downstream microbiome profiling or assembly. At the same time, mapped reads are retained in a host-only BAM file, which can be used for host genomics analyses or simply for quality assessment.
+
+In addition to generating the split read files, the rule also counts how many reads and how many total bases fall into the metagenomic vs. host categories. These summary files are useful for evaluating host contamination, sequencing depth distribution, and the overall success of the host-depletion strategy. The process relies on samtools to filter BAM records by mapping flags and uses simple awk commands to tally base counts, making it a compact but crucial step in workflows that jointly analyze host and microbiota data.
+
+```{sh eval=FALSE}
+rule split_reads:
+    input:
+        f"{OUTPUT_DIR}/preprocessing/bowtie2/{{sample}}.bam"
+    output:
+        r1=f"{OUTPUT_DIR}/preprocessing/final/{{sample}}_1.fq.gz",
+        r2=f"{OUTPUT_DIR}/preprocessing/final/{{sample}}_2.fq.gz",
+        metareads=f"{OUTPUT_DIR}/preprocessing/final/{{sample}}.metareads",
+        metabases=f"{OUTPUT_DIR}/preprocessing/final/{{sample}}.metabases",
+        bam=f"{OUTPUT_DIR}/preprocessing/final/{{sample}}.bam",
+        hostreads=f"{OUTPUT_DIR}/preprocessing/final/{{sample}}.hostreads",
+        hostbases=f"{OUTPUT_DIR}/preprocessing/final/{{sample}}.hostbases"
+    shell:
+        """
+        module load {params.bowtie2_module} {params.samtools_module}
+        samtools view -b -f12 -@ {threads} {input} | samtools fastq -@ {threads} -1 {output.r1} -2 {output.r2} -
+        samtools view -b -f12 -@ {threads} {input} | samtools view -c - > {output.metareads}
+        samtools view -f12 -@ {threads} {input} | awk '{{sum += length($10)}} END {{print sum}}' > {output.metabases}
+        samtools view -b -F12 -@ {threads} {input} | samtools sort -@ {threads} -o {output.bam} -
+        samtools view -b -F12 -@ {threads} {input} | samtools view -c - > {output.hostreads}
+        samtools view -F12 -@ {threads} {input} | awk '{{sum += length($10)}} END {{print sum}}' > {output.hostbases}
+        """
+```
