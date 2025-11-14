@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 Getting ready | Host-Microbiota Multi-Omics</title>
+  <title>Chapter 7 Preprocessing | Host-Microbiota Multi-Omics</title>
   <meta name="description" content="&lt;p&gt;Workshop tutorial.&lt;/p&gt;" />
   <meta name="generator" content="bookdown 0.41 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 Getting ready | Host-Microbiota Multi-Omics" />
+  <meta property="og:title" content="Chapter 7 Preprocessing | Host-Microbiota Multi-Omics" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="&lt;p&gt;Workshop tutorial.&lt;/p&gt;" />
   <meta name="github-repo" content="host-microbiota-multi-omics/host-microbiota-multi-omics.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 Getting ready | Host-Microbiota Multi-Omics" />
+  <meta name="twitter:title" content="Chapter 7 Preprocessing | Host-Microbiota Multi-Omics" />
   
   <meta name="twitter:description" content="&lt;p&gt;Workshop tutorial.&lt;/p&gt;" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="index.html"/>
-<link rel="next" href="command-line-basics.html"/>
+<link rel="prev" href="course-environment.html"/>
+<link rel="next" href="host-genome.html"/>
 
 
 
@@ -2101,42 +2101,127 @@ color: #a52929;
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="getting-ready" class="section level1 hasAnchor" number="2">
-<h1><span class="header-section-number">Chapter 2</span> Getting ready<a href="getting-ready.html#getting-ready" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="get-visual-studio-code-ready" class="section level2 hasAnchor" number="2.1">
-<h2><span class="header-section-number">2.1</span> Get Visual Studio Code ready<a href="getting-ready.html#get-visual-studio-code-ready" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Visual Studio Code (VS Code) is a lightweight, cross-platform code editor developed by Microsoft. It’s free, open source, and supports a wide range of programming languages.</p>
-<ol style="list-style-type: decimal">
-<li>Download Visual studio code: <a href="https://code.visualstudio.com/download" class="uri">https://code.visualstudio.com/download</a></li>
-<li>Using the extension manager, install the following plugins:</li>
-</ol>
-<ul>
-<li><strong>Python</strong> by Microsoft</li>
-<li><strong>Snakemake Language</strong> by Snakemake</li>
-<li><strong>Remote - SSH</strong> by Microsoft</li>
-<li><strong>Remote Explorer</strong> by Microsoft</li>
-</ul>
+<div id="preprocessing" class="section level1 hasAnchor" number="7">
+<h1><span class="header-section-number">Chapter 7</span> Preprocessing<a href="preprocessing.html#preprocessing" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="quality-filtering" class="section level2 hasAnchor" number="7.1">
+<h2><span class="header-section-number">7.1</span> Quality filtering<a href="preprocessing.html#quality-filtering" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This rule performs the first major preprocessing step in the workflow: quality-control, trimming, and filtering of raw paired-end sequencing reads using fastp. It takes each sample’s raw FASTQ files and removes adapters, trims low-quality bases, filters out low-complexity or artifact-rich reads (including common NovaSeq poly-G/X issues), and outputs cleaned read pairs. These cleaned FASTQ files form the high-quality input for all downstream host–microbiota analyses, ensuring that later steps—such as host-read removal, taxonomic profiling, or assembly—are not biased by sequencing artifacts.</p>
+<p>In addition to generating cleaned reads, the rule produces HTML and JSON quality-control reports summarizing read quality before and after processing. The rule also handles software environment setup through module loading and scales memory/runtime requirements automatically based on the size of the input files, making it robust on HPC systems.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb5-1"><a href="preprocessing.html#cb5-1" tabindex="-1"></a><span class="ex">rule</span> fastp:</span>
+<span id="cb5-2"><a href="preprocessing.html#cb5-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
+<span id="cb5-3"><a href="preprocessing.html#cb5-3" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/reads/{{sample}}_1.fq.gz&quot;</span>,</span>
+<span id="cb5-4"><a href="preprocessing.html#cb5-4" tabindex="-1"></a>        <span class="va">r2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/reads/{{sample}}_2.fq.gz&quot;</span></span>
+<span id="cb5-5"><a href="preprocessing.html#cb5-5" tabindex="-1"></a>    <span class="ex">output:</span></span>
+<span id="cb5-6"><a href="preprocessing.html#cb5-6" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_1.fq.gz&quot;</span>,</span>
+<span id="cb5-7"><a href="preprocessing.html#cb5-7" tabindex="-1"></a>        <span class="va">r2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_2.fq.gz&quot;</span>,</span>
+<span id="cb5-8"><a href="preprocessing.html#cb5-8" tabindex="-1"></a>        <span class="va">html</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}.html&quot;</span>,</span>
+<span id="cb5-9"><a href="preprocessing.html#cb5-9" tabindex="-1"></a>        <span class="va">json</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}.json&quot;</span></span>
+<span id="cb5-10"><a href="preprocessing.html#cb5-10" tabindex="-1"></a>    <span class="ex">shell:</span></span>
+<span id="cb5-11"><a href="preprocessing.html#cb5-11" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb5-12"><a href="preprocessing.html#cb5-12" tabindex="-1"></a><span class="st">        module load {params.fastp_module}</span></span>
+<span id="cb5-13"><a href="preprocessing.html#cb5-13" tabindex="-1"></a><span class="st">        fastp </span><span class="dt">\</span></span>
+<span id="cb5-14"><a href="preprocessing.html#cb5-14" tabindex="-1"></a><span class="st">            --in1 {input.r1} --in2 {input.r2} </span><span class="dt">\</span></span>
+<span id="cb5-15"><a href="preprocessing.html#cb5-15" tabindex="-1"></a><span class="st">            --out1 {output.r1} --out2 {output.r2} </span><span class="dt">\</span></span>
+<span id="cb5-16"><a href="preprocessing.html#cb5-16" tabindex="-1"></a><span class="st">            --trim_poly_g </span><span class="dt">\</span></span>
+<span id="cb5-17"><a href="preprocessing.html#cb5-17" tabindex="-1"></a><span class="st">            --trim_poly_x </span><span class="dt">\</span></span>
+<span id="cb5-18"><a href="preprocessing.html#cb5-18" tabindex="-1"></a><span class="st">            --low_complexity_filter </span><span class="dt">\</span></span>
+<span id="cb5-19"><a href="preprocessing.html#cb5-19" tabindex="-1"></a><span class="st">            --n_base_limit 5 </span><span class="dt">\</span></span>
+<span id="cb5-20"><a href="preprocessing.html#cb5-20" tabindex="-1"></a><span class="st">            --qualified_quality_phred 20 </span><span class="dt">\</span></span>
+<span id="cb5-21"><a href="preprocessing.html#cb5-21" tabindex="-1"></a><span class="st">            --length_required 60 </span><span class="dt">\</span></span>
+<span id="cb5-22"><a href="preprocessing.html#cb5-22" tabindex="-1"></a><span class="st">            --thread {threads} </span><span class="dt">\</span></span>
+<span id="cb5-23"><a href="preprocessing.html#cb5-23" tabindex="-1"></a><span class="st">            --html {output.html} </span><span class="dt">\</span></span>
+<span id="cb5-24"><a href="preprocessing.html#cb5-24" tabindex="-1"></a><span class="st">            --json {output.json} </span><span class="dt">\</span></span>
+<span id="cb5-25"><a href="preprocessing.html#cb5-25" tabindex="-1"></a><span class="st">            --adapter_sequence AGATCGGAAGAGCACACGTCTGAACTCCAGTCA </span><span class="dt">\</span></span>
+<span id="cb5-26"><a href="preprocessing.html#cb5-26" tabindex="-1"></a><span class="st">            --adapter_sequence_r2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT</span></span>
+<span id="cb5-27"><a href="preprocessing.html#cb5-27" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
 </div>
-<div id="create-a-ssh-connection-to-mjolnir" class="section level2 hasAnchor" number="2.2">
-<h2><span class="header-section-number">2.2</span> Create a SSH connection to Mjolnir<a href="getting-ready.html#create-a-ssh-connection-to-mjolnir" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<ol style="list-style-type: decimal">
-<li>Ensure you are connected to the KU VPN</li>
-<li>Menu: View &gt; Command Palette &gt; Remote-SSH: Connect to Host</li>
-<li><ul>
-<li>Add New SSH Host</li>
-</ul></li>
-<li>ssh mjolnirgate.unicph.domain</li>
-<li>Type password</li>
-</ol>
-<p>This should have created a SSH connection to Mjolnir, which will enable you to create a Remote Explorewr.</p>
+<div id="host-mapping" class="section level2 hasAnchor" number="7.2">
+<h2><span class="header-section-number">7.2</span> Host mapping<a href="preprocessing.html#host-mapping" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This rule prepares a reference genome so it can be efficiently used for read alignment with Bowtie2. It takes a FASTA file for a given host genome and runs bowtie2-build to generate the index files that Bowtie2 requires for fast and accurate mapping. Only one of the produced index files is listed as the output, but the command generates the full set of Bowtie2 index components. This indexing step is essential because alignment tools rely on these precomputed structures to rapidly search the genome during mapping.</p>
+<p>In addition to building the index, the rule also saves a copy of the reference FASTA alongside the index under a standardized naming scheme, ensuring consistency for downstream processes that expect the reference to be colocated with its index. The rule loads the appropriate Bowtie2 module and includes adaptive memory and runtime estimation based on the size of the reference genome, making it robust for small microbial genomes as well as larger host genomes.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb6-1"><a href="preprocessing.html#cb6-1" tabindex="-1"></a><span class="ex">rule</span> reference_index:</span>
+<span id="cb6-2"><a href="preprocessing.html#cb6-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
+<span id="cb6-3"><a href="preprocessing.html#cb6-3" tabindex="-1"></a>        <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/data/references/{{reference}}.fna&quot;</span></span>
+<span id="cb6-4"><a href="preprocessing.html#cb6-4" tabindex="-1"></a>    <span class="ex">output:</span></span>
+<span id="cb6-5"><a href="preprocessing.html#cb6-5" tabindex="-1"></a>        <span class="va">index</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/references/{{reference}}.rev.1.bt2&quot;</span></span>
+<span id="cb6-6"><a href="preprocessing.html#cb6-6" tabindex="-1"></a>    <span class="ex">params:</span></span>
+<span id="cb6-7"><a href="preprocessing.html#cb6-7" tabindex="-1"></a>        <span class="va">basename</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/references/{{reference}}&quot;</span></span>
+<span id="cb6-8"><a href="preprocessing.html#cb6-8" tabindex="-1"></a>    <span class="ex">shell:</span></span>
+<span id="cb6-9"><a href="preprocessing.html#cb6-9" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb6-10"><a href="preprocessing.html#cb6-10" tabindex="-1"></a><span class="st">        module load {params.bowtie2_module}</span></span>
+<span id="cb6-11"><a href="preprocessing.html#cb6-11" tabindex="-1"></a><span class="st">        bowtie2-build {input} {params.basename}</span></span>
+<span id="cb6-12"><a href="preprocessing.html#cb6-12" tabindex="-1"></a><span class="st">        cat {input} &gt; {params.basename}.fna</span></span>
+<span id="cb6-13"><a href="preprocessing.html#cb6-13" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
 </div>
-<div id="open-the-remote-explorer" class="section level2 hasAnchor" number="2.3">
-<h2><span class="header-section-number">2.3</span> Open the remote explorer<a href="getting-ready.html#open-the-remote-explorer" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<ol style="list-style-type: decimal">
-<li>Explorer</li>
-<li>Connect to remote &gt; Open Folder</li>
-<li>Use the following path: /maps/projects/course_2/people/{ku-id}</li>
-</ol>
+<div id="host-genome-mapping" class="section level2 hasAnchor" number="7.3">
+<h2><span class="header-section-number">7.3</span> Host genome mapping<a href="preprocessing.html#host-genome-mapping" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This rule maps each sample’s quality-filtered paired-end reads to its corresponding reference genome using Bowtie2, producing a sorted BAM file that is ready for downstream analyses such as host read removal, quantification, or coverage estimation. It uses the Bowtie2 index generated in the previous step and the cleaned FASTQ files from fastp as inputs. The mapping is performed with multiple threads for efficiency, and the output is streamed directly into samtools to convert the SAM alignment to BAM format and sort it in a single streamlined command.</p>
+<p>By linking each sample to its appropriate reference through SAMPLE_TO_REFERENCE, the rule flexibly supports host–microbiota workflows where different samples may require different reference genomes. Memory and runtime are scaled according to the size of the input reads, ensuring robust performance across varied dataset sizes. The result is a properly formatted, sorted BAM file that downstream tools can use without additional preprocessing.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb7-1"><a href="preprocessing.html#cb7-1" tabindex="-1"></a><span class="ex">rule</span> reference_map:</span>
+<span id="cb7-2"><a href="preprocessing.html#cb7-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
+<span id="cb7-3"><a href="preprocessing.html#cb7-3" tabindex="-1"></a>        <span class="va">index</span><span class="op">=</span>lambda <span class="ex">wildcards:</span> expand<span class="er">(</span></span>
+<span id="cb7-4"><a href="preprocessing.html#cb7-4" tabindex="-1"></a>            <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/data/references/{{reference}}.rev.1.bt2&quot;</span><span class="ex">,</span></span>
+<span id="cb7-5"><a href="preprocessing.html#cb7-5" tabindex="-1"></a>            <span class="va">reference</span><span class="op">=</span>[SAMPLE_TO_REFERENCE<span class="pp">[</span><span class="ss">wildcards.sample</span><span class="pp">]</span>]</span>
+<span id="cb7-6"><a href="preprocessing.html#cb7-6" tabindex="-1"></a>        <span class="kw">)</span><span class="ex">,</span></span>
+<span id="cb7-7"><a href="preprocessing.html#cb7-7" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_1.fq.gz&quot;</span>,</span>
+<span id="cb7-8"><a href="preprocessing.html#cb7-8" tabindex="-1"></a>        <span class="va">r2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_2.fq.gz&quot;</span></span>
+<span id="cb7-9"><a href="preprocessing.html#cb7-9" tabindex="-1"></a>    <span class="ex">output:</span></span>
+<span id="cb7-10"><a href="preprocessing.html#cb7-10" tabindex="-1"></a>        <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/preprocessing/bowtie2/{{sample}}.bam&quot;</span></span>
+<span id="cb7-11"><a href="preprocessing.html#cb7-11" tabindex="-1"></a>    <span class="ex">params:</span></span>
+<span id="cb7-12"><a href="preprocessing.html#cb7-12" tabindex="-1"></a>        <span class="va">basename</span><span class="op">=</span>lambda <span class="ex">wildcards:</span> f<span class="st">&quot;{OUTPUT_DIR}/data/references/{SAMPLE_TO_REFERENCE[wildcards.sample]}&quot;</span></span>
+<span id="cb7-13"><a href="preprocessing.html#cb7-13" tabindex="-1"></a>    <span class="ex">shell:</span></span>
+<span id="cb7-14"><a href="preprocessing.html#cb7-14" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb7-15"><a href="preprocessing.html#cb7-15" tabindex="-1"></a><span class="st">        module load {params.bowtie2_module} {params.samtools_module}</span></span>
+<span id="cb7-16"><a href="preprocessing.html#cb7-16" tabindex="-1"></a><span class="st">        bowtie2 -x {params.basename} -1 {input.r1} -2 {input.r2} -p {threads} | samtools view -bS - | samtools sort -o {output}</span></span>
+<span id="cb7-17"><a href="preprocessing.html#cb7-17" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
+</div>
+<div id="mapping-statistics" class="section level2 hasAnchor" number="7.4">
+<h2><span class="header-section-number">7.4</span> Mapping statistics<a href="preprocessing.html#mapping-statistics" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This rule computes alignment quality and summary statistics for each sorted BAM file generated during mapping. Using several samtools subcommands, it produces metrics that describe how well the reads aligned to the reference genome—information essential for evaluating host-read removal efficiency, assessing sequencing quality, and feeding into MultiQC reports. The BAM file is indexed to enable rapid random access, while flagstat, idxstats, and stats each provide different levels of summary: overall alignment rates, per-reference sequence counts, and more detailed alignment metrics.</p>
+<p>All these outputs are written into a dedicated samtools directory and follow a consistent naming structure, making them easy to collect later for QC visualization and downstream processing. The rule loads the necessary samtools module and uses light computational resources, since generating these QC summaries is relatively inexpensive compared to alignment.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb8-1"><a href="preprocessing.html#cb8-1" tabindex="-1"></a><span class="ex">rule</span> samtools_stats:</span>
+<span id="cb8-2"><a href="preprocessing.html#cb8-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
+<span id="cb8-3"><a href="preprocessing.html#cb8-3" tabindex="-1"></a>        <span class="ex">rules.reference_map.output</span></span>
+<span id="cb8-4"><a href="preprocessing.html#cb8-4" tabindex="-1"></a>    <span class="ex">output:</span></span>
+<span id="cb8-5"><a href="preprocessing.html#cb8-5" tabindex="-1"></a>        <span class="ex">bai</span>      = f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.bam.bai&quot;</span>,</span>
+<span id="cb8-6"><a href="preprocessing.html#cb8-6" tabindex="-1"></a>        <span class="ex">flagstat</span> = f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.flagstat.txt&quot;</span>,</span>
+<span id="cb8-7"><a href="preprocessing.html#cb8-7" tabindex="-1"></a>        <span class="ex">idxstats</span> = f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.idxstats.txt&quot;</span>,</span>
+<span id="cb8-8"><a href="preprocessing.html#cb8-8" tabindex="-1"></a>        <span class="ex">stats</span>    = f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.stats.txt&quot;</span></span>
+<span id="cb8-9"><a href="preprocessing.html#cb8-9" tabindex="-1"></a>    <span class="ex">shell:</span></span>
+<span id="cb8-10"><a href="preprocessing.html#cb8-10" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb8-11"><a href="preprocessing.html#cb8-11" tabindex="-1"></a><span class="st">        module load {params.samtools_module}</span></span>
+<span id="cb8-12"><a href="preprocessing.html#cb8-12" tabindex="-1"></a><span class="st">        samtools index {input} {output.bai}</span></span>
+<span id="cb8-13"><a href="preprocessing.html#cb8-13" tabindex="-1"></a><span class="st">        samtools flagstat {input} &gt; {output.flagstat}</span></span>
+<span id="cb8-14"><a href="preprocessing.html#cb8-14" tabindex="-1"></a><span class="st">        samtools idxstats {input} &gt; {output.idxstats}</span></span>
+<span id="cb8-15"><a href="preprocessing.html#cb8-15" tabindex="-1"></a><span class="st">        samtools stats {input} &gt; {output.stats}</span></span>
+<span id="cb8-16"><a href="preprocessing.html#cb8-16" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
+</div>
+<div id="host-microbiota-split" class="section level2 hasAnchor" number="7.5">
+<h2><span class="header-section-number">7.5</span> Host-microbiota split<a href="preprocessing.html#host-microbiota-split" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This rule takes the aligned BAM file and separates mapped and unmapped read pairs, effectively splitting host-origin reads from metagenomic reads. Unmapped reads (i.e., those that did not align to the host reference) are extracted and converted back into paired FASTQ files, forming the metagenomic read set used for downstream microbiome profiling or assembly. At the same time, mapped reads are retained in a host-only BAM file, which can be used for host genomics analyses or simply for quality assessment.</p>
+<p>In addition to generating the split read files, the rule also counts how many reads and how many total bases fall into the metagenomic vs. host categories. These summary files are useful for evaluating host contamination, sequencing depth distribution, and the overall success of the host-depletion strategy. The process relies on samtools to filter BAM records by mapping flags and uses simple awk commands to tally base counts, making it a compact but crucial step in workflows that jointly analyze host and microbiota data.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb9-1"><a href="preprocessing.html#cb9-1" tabindex="-1"></a><span class="ex">rule</span> split_reads:</span>
+<span id="cb9-2"><a href="preprocessing.html#cb9-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
+<span id="cb9-3"><a href="preprocessing.html#cb9-3" tabindex="-1"></a>        <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/preprocessing/bowtie2/{{sample}}.bam&quot;</span></span>
+<span id="cb9-4"><a href="preprocessing.html#cb9-4" tabindex="-1"></a>    <span class="ex">output:</span></span>
+<span id="cb9-5"><a href="preprocessing.html#cb9-5" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}_1.fq.gz&quot;</span>,</span>
+<span id="cb9-6"><a href="preprocessing.html#cb9-6" tabindex="-1"></a>        <span class="va">r2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}_2.fq.gz&quot;</span>,</span>
+<span id="cb9-7"><a href="preprocessing.html#cb9-7" tabindex="-1"></a>        <span class="va">metareads</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.metareads&quot;</span>,</span>
+<span id="cb9-8"><a href="preprocessing.html#cb9-8" tabindex="-1"></a>        <span class="va">metabases</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.metabases&quot;</span>,</span>
+<span id="cb9-9"><a href="preprocessing.html#cb9-9" tabindex="-1"></a>        <span class="va">bam</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.bam&quot;</span>,</span>
+<span id="cb9-10"><a href="preprocessing.html#cb9-10" tabindex="-1"></a>        <span class="va">hostreads</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.hostreads&quot;</span>,</span>
+<span id="cb9-11"><a href="preprocessing.html#cb9-11" tabindex="-1"></a>        <span class="va">hostbases</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.hostbases&quot;</span></span>
+<span id="cb9-12"><a href="preprocessing.html#cb9-12" tabindex="-1"></a>    <span class="ex">shell:</span></span>
+<span id="cb9-13"><a href="preprocessing.html#cb9-13" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb9-14"><a href="preprocessing.html#cb9-14" tabindex="-1"></a><span class="st">        module load {params.bowtie2_module} {params.samtools_module}</span></span>
+<span id="cb9-15"><a href="preprocessing.html#cb9-15" tabindex="-1"></a><span class="st">        samtools view -b -f12 -@ {threads} {input} | samtools fastq -@ {threads} -1 {output.r1} -2 {output.r2} -</span></span>
+<span id="cb9-16"><a href="preprocessing.html#cb9-16" tabindex="-1"></a><span class="st">        samtools view -b -f12 -@ {threads} {input} | samtools view -c - &gt; {output.metareads}</span></span>
+<span id="cb9-17"><a href="preprocessing.html#cb9-17" tabindex="-1"></a><span class="st">        samtools view -f12 -@ {threads} {input} | awk &#39;{{sum += length(</span><span class="va">$1</span><span class="st">0)}} END {{print sum}}&#39; &gt; {output.metabases}</span></span>
+<span id="cb9-18"><a href="preprocessing.html#cb9-18" tabindex="-1"></a><span class="st">        samtools view -b -F12 -@ {threads} {input} | samtools sort -@ {threads} -o {output.bam} -</span></span>
+<span id="cb9-19"><a href="preprocessing.html#cb9-19" tabindex="-1"></a><span class="st">        samtools view -b -F12 -@ {threads} {input} | samtools view -c - &gt; {output.hostreads}</span></span>
+<span id="cb9-20"><a href="preprocessing.html#cb9-20" tabindex="-1"></a><span class="st">        samtools view -F12 -@ {threads} {input} | awk &#39;{{sum += length(</span><span class="va">$1</span><span class="st">0)}} END {{print sum}}&#39; &gt; {output.hostbases}</span></span>
+<span id="cb9-21"><a href="preprocessing.html#cb9-21" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
+
 </div>
 </div>
             </section>
@@ -2144,8 +2229,8 @@ color: #a52929;
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="command-line-basics.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="course-environment.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="host-genome.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script>/*! jQuery v3.6.0 | (c) OpenJS Foundation and other contributors | jquery.org/license */
