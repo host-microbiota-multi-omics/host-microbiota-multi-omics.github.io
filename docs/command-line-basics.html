@@ -2039,9 +2039,23 @@ color: #a52929;
 <ul>
 <li class="chapter" data-level="4.1" data-path="high-performance-computation.html"><a href="high-performance-computation.html#modules"><i class="fa fa-check"></i><b>4.1</b> Modules</a></li>
 <li class="chapter" data-level="4.2" data-path="high-performance-computation.html"><a href="high-performance-computation.html#screen"><i class="fa fa-check"></i><b>4.2</b> Screen</a></li>
-<li class="chapter" data-level="4.3" data-path="high-performance-computation.html"><a href="high-performance-computation.html#slurm"><i class="fa fa-check"></i><b>4.3</b> SLURM</a></li>
+<li class="chapter" data-level="4.3" data-path="high-performance-computation.html"><a href="high-performance-computation.html#slurm"><i class="fa fa-check"></i><b>4.3</b> SLURM</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="high-performance-computation.html"><a href="high-performance-computation.html#job-scheduler"><i class="fa fa-check"></i><b>4.3.1</b> Job scheduler</a></li>
+<li class="chapter" data-level="4.3.2" data-path="high-performance-computation.html"><a href="high-performance-computation.html#interactive-job"><i class="fa fa-check"></i><b>4.3.2</b> Interactive job</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="snakemake.html"><a href="snakemake.html"><i class="fa fa-check"></i><b>5</b> Snakemake</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="snakemake.html"><a href="snakemake.html"><i class="fa fa-check"></i><b>5</b> Snakemake</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="snakemake.html"><a href="snakemake.html#the-snakefile"><i class="fa fa-check"></i><b>5.1</b> The Snakefile</a></li>
+<li class="chapter" data-level="5.2" data-path="snakemake.html"><a href="snakemake.html#the-rules"><i class="fa fa-check"></i><b>5.2</b> The rules</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="snakemake.html"><a href="snakemake.html#the-all-rule"><i class="fa fa-check"></i><b>5.2.1</b> The ALL rule</a></li>
+<li class="chapter" data-level="5.2.2" data-path="snakemake.html"><a href="snakemake.html#a-regular-rule"><i class="fa fa-check"></i><b>5.2.2</b> A regular rule</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="snakemake.html"><a href="snakemake.html#linking-rules-together"><i class="fa fa-check"></i><b>5.3</b> Linking rules together</a></li>
+<li class="chapter" data-level="5.4" data-path="snakemake.html"><a href="snakemake.html#executing-the-pipeline"><i class="fa fa-check"></i><b>5.4</b> Executing the pipeline</a></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="course-environment.html"><a href="course-environment.html"><i class="fa fa-check"></i><b>6</b> Course environment</a>
 <ul>
 <li class="chapter" data-level="6.1" data-path="course-environment.html"><a href="course-environment.html#your-directory"><i class="fa fa-check"></i><b>6.1</b> Your directory</a></li>
@@ -2103,6 +2117,34 @@ color: #a52929;
             <section class="normal" id="section-">
 <div id="command-line-basics" class="section level1 hasAnchor" number="3">
 <h1><span class="header-section-number">Chapter 3</span> Command line basics<a href="command-line-basics.html#command-line-basics" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Before diving into high-performance computing and Snakemake, it’s essential to understand some command-line basics.
+The command line, also known as the terminal or shell, is a text-based interface that allows users to interact with their
+computer’s operating system. Here are some fundamental commands and concepts to get you started:</p>
+<ul>
+<li><strong>Navigating directories:</strong>
+<ul>
+<li><code>pwd</code>: Print the current working directory.</li>
+<li><code>ls</code>: List files and directories in the current directory.</li>
+<li><code>cd &lt;directory&gt;</code>: Change to a specified directory.</li>
+</ul></li>
+<li><strong>File operations:</strong>
+<ul>
+<li><code>cp &lt;source&gt; &lt;destination&gt;</code>: Copy files or directories.</li>
+<li><code>mv &lt;source&gt; &lt;destination&gt;</code>: Move or rename files or directories.</li>
+<li><code>rm &lt;file&gt;</code>: Remove files.</li>
+<li><code>mkdir &lt;directory&gt;</code>: Create a new directory.</li>
+</ul></li>
+<li><strong>Viewing file contents:</strong>
+<ul>
+<li><code>cat &lt;file&gt;</code>: Display the contents of a file.</li>
+<li><code>less &lt;file&gt;</code>: View file contents one page at a time.</li>
+</ul></li>
+<li><strong>Getting help:</strong>
+<ul>
+<li><code>man &lt;command&gt;</code>: Display the manual for a command.</li>
+<li><code>&lt;command&gt; --help</code>: Show help information for a command.</li>
+</ul></li>
+</ul>
 </div>
             </section>
 

@@ -1,10 +1,18 @@
 # (PART) Computation basics {-}
 
+Before we start working with complex Snakemake pipelines, we need to get familiar with some basic concepts of high-performance 
+computation (HPC). This section will guide you through the necessary steps to set up your environment, understand command-line basics, 
+and get acquainted with Snakemake.
+
 # Getting ready
+
+The first step to get started with the course is to set up your environment. This includes installing Visual Studio Code,
+establishing a SSH connection to the Mjolnir HPC cluster, and opening the remote explorer.
 
 ## Get Visual Studio Code ready
 
-Visual Studio Code (VS Code) is a lightweight, cross-platform code editor developed by Microsoft. It’s free, open source, and supports a wide range of programming languages.
+Visual Studio Code (VS Code) is a lightweight, cross-platform code editor developed by Microsoft. It's free, open source, and 
+supports a wide range of programming languages.
 
 1. Download Visual studio code: https://code.visualstudio.com/download
 2. Using the extension manager, install the following plugins:
@@ -21,7 +29,7 @@ Visual Studio Code (VS Code) is a lightweight, cross-platform code editor develo
 4. ssh mjolnirgate.unicph.domain
 5. Type password
 
-This should have created a SSH connection to Mjolnir, which will enable you to create a Remote Explorewr.
+This should have created a SSH connection to Mjolnir, which will enable you to create a Remote Explorer.
 
 ## Open the remote explorer
 
@@ -31,15 +39,47 @@ This should have created a SSH connection to Mjolnir, which will enable you to c
 
 # Command line basics
 
+Before diving into high-performance computing and Snakemake, it's essential to understand some command-line basics. 
+The command line, also known as the terminal or shell, is a text-based interface that allows users to interact with their 
+computer's operating system. Here are some fundamental commands and concepts to get you started:
+
+- **Navigating directories:**
+  - `pwd`: Print the current working directory.
+  - `ls`: List files and directories in the current directory.
+  - `cd <directory>`: Change to a specified directory.
+- **File operations:**
+  - `cp <source> <destination>`: Copy files or directories.
+  - `mv <source> <destination>`: Move or rename files or directories.
+  - `rm <file>`: Remove files.
+  - `mkdir <directory>`: Create a new directory.
+- **Viewing file contents:**
+  - `cat <file>`: Display the contents of a file.
+  - `less <file>`: View file contents one page at a time.
+- **Getting help:**
+  - `man <command>`: Display the manual for a command.
+  - `<command> --help`: Show help information for a command.
+
 # High Performance Computation 
 
-## Modules
+High-Performance Computing (HPC) refers to the use of powerful computers and parallel processing techniques to 
+solve complex computational problems that require significant processing power and memory. HPC systems, 
+often referred to as supercomputers or clusters, are designed to perform large-scale computations at high speeds, 
+enabling researchers and scientists to tackle problems that would be infeasible on standard computers.
 
-We will need to load two key modules to run the workshop. If you have your own conda, consider deactivating it temporarily to ensure the exercises run smoothly.
+## Modules
+Modules are a way to manage and organise software packages on HPC systems. They allow users to easily load, unload, and 
+switch between different software versions and configurations without interfering with each other. 
+Modules help maintain a clean and organised environment, making it easier for users to access the software they need for their work.
+
+We will need to load two key modules to run our pipelines. If you have your own conda, consider deactivating it 
+temporarily to ensure the exercises run smoothly.
 
 ```{sh eval=FALSE}
-# Ensure there is nothing loaded
+# Remove any previously loaded modules
 module purge
+
+# Check for desired modules
+module avail snakemake
 
 # Load the relevant modules
 module load snakemake/9.4.0
@@ -58,7 +98,11 @@ Currently Loaded Modulefiles:
 
 ## Screen 
 
-Screen is a simple tool that keeps your command-line session running on a server even if your internet drops or you close your laptop. Think of it like putting your terminal in a locker—you can step away and later unlock it to find everything exactly where you left it. It also lets you make several “tabs” (windows) inside one SSH login and switch between them. On HPC clusters where tasks can run for hours, starting them inside Screen keeps them safe and easy to rejoin. It’s lightweight and saves you from losing work.
+Screen is a simple tool that keeps your command-line session running on a server even if your internet 
+drops or you close your laptop. Think of it like putting your terminal in a locker—you can step away and later 
+unlock it to find everything exactly where you left it. It also lets you make several “tabs” (windows) inside one 
+SSH login and switch between them. On HPC clusters where tasks can run for hours, starting them inside Screen keeps 
+them safe and easy to rejoin. It’s lightweight and saves you from losing work.
 
 To create a screen session for the entire duration of the workshop:
 
@@ -78,7 +122,338 @@ And to close the session, just type `exit`.
 
 ## SLURM 
 
-# Snakemake 
+SLURM (Simple Linux Utility for Resource Management) is a widely used open-source job scheduler and workload manager for 
+high-performance computing (HPC) clusters. It handles three main tasks:
+
+- **Resource allocation** deciding which jobs run on which nodes.
+- **Job scheduling** prioritising and queuing jobs.
+- **Job execution** launching and monitoring jobs across compute nodes.
+
+Snakemake can submit workflow rules directly to SLURM. When a rule is executed this way, Snakemake doesn't run the job itself; 
+instead, it generates an sbatch command with the appropriate resource requests and submits it to SLURM. From Snakemake 8 onwards, 
+it requires installation of the (executor plugin)[https://anaconda.org/bioconda/snakemake-executor-plugin-slurm].
+
+### Job scheduler
+
+On Mjolnir, we use SLURM as a job scheduler to manage and allocate computational resources efficiently. 
+SLURM allows users to submit jobs to a queue, where they wait for available resources before execution. 
+This system helps ensure fair resource distribution among users and optimizes the overall performance of the cluster.
+
+When you submit a job using SLURM, you specify the resources you need (like CPU cores, memory, and time). 
+SLURM then places your job in a queue and runs it when the requested resources become available.
+
+```{sh eval=FALSE}
+# Submit a job to the SLURM scheduler
+sbatch -J {job_name} --partition=cpuqueue --qos=normal --cpus-per-task=12 --mem=8G --time=5:00:00 --wrap="{command_to_run}"
+
+# Shell file example
+cat > job_to_launch.sh << 'EOF'
+#!/bin/bash
+#SBATCH -J example_job
+#SBATCH --partition=cpuqueue
+#SBATCH --qos=normal
+#SBATCH --cpus-per-task=12
+#SBATCH --mem=8G
+#SBATCH --time=5:00:00 
+{command_to_run}
+EOF
+
+sbatch job_to_launch.sh
+
+# Check the status of your jobs in the queue
+squeue -u {ku-id}
+```
+
+### Interactive job
+
+On a shared cluster like Mjolnir, the entry (login) nodes are the front door: they’re meant for quick, lightweight tasks like connecting, moving files, loading modules, editing scripts, and submitting jobs. They are shared by everyone and deliberately constrained (CPU, memory, long-running limits). Running heavy computations there slows the system for all users and can trigger automatic kills from cluster policies. An interactive session gives you a reserved slice of the compute nodes through the scheduler (e.g., Slurm).
+
+When you are in the entry node, the following command should return.
+
+```{sh eval=FALSE}
+hostname
+```
+
+```
+mjolnirgate01fl.unicph.domain
+```
+
+In this workshop, each participant will get allocated 4 CPUs and 16GB of memory at node mjolnircomp14fl. When that time is over, the session will close automatically.
+
+```{sh eval=FALSE}
+srun \
+  --job-name=snakemake_workshop \
+  --account=teaching \
+  --reservation=snakemake_hackaton \
+  --partition=cpuqueue \
+  --nodes=1 \
+  --nodelist=mjolnircomp14fl \
+  --time=08:00:00 \
+  --mem=16G \
+  --cpus-per-task=4 \
+  --pty bash -I
+```
+
+This will display for a few seconds, after which you will get connected to the computation node.
+
+```
+srun: job XXXXXXXXX queued and waiting for resources
+```
+
+To verify you are in the computing node the `hostname` command should now display:
+
+```
+mjolnircomp14fl.unicph.domain
+```
+
+To exit the interactive job, just type `exit`.
+
+# Snakemake
+Snakemake is a workflow management system that enables the creation of reproducible and scalable data analysis pipelines. It allows 
+users to define complex workflows using a simple and intuitive syntax, making it easier to manage and automate data processing tasks. 
+Snakemake is particularly popular in bioinformatics and computational biology, where it is used to handle large datasets and complex analyses.
+
+Snakemake is a **rule-based** workflow system. Each rule says:
+
+- What it produces (the output)
+- What it needs to produce that (the input)
+- How to produce it (the command + parameters)
+
+Snakemake then figures out the right order to run everything and which parts can run at the same time.
+
+## The Snakefile
+
+The Snakefile is the heart of any Snakemake workflow. It is a plain text file—usually named `Snakefile` (with no file extension)—written in a **mix of Snakemake’s workflow syntax and regular Python code**.
+
+It serves as:
+
+- A blueprint for your entire analysis pipeline
+- A dependency map, describing what each step needs and produces
+- An execution plan that Snakemake follows to run your tasks in the correct order
+
+The Snakefile is human-readable, version-controllable (e.g., with Git), and shareable.
+
+## The rules
+
+The Snakefile contains (at least) the rules that define the pipeline.
+
+### The ALL rule
+
+You typically start by specifying what you ultimately want to produce (plots, tables, reports) in the `all` rule:
+
+```{sh eval=FALSE}
+rule all:
+  input: 
+    "results/plot.png"
+```
+
+In this example, the pipeline will yield a `plot.png` file in the `results` directory. But you can also define multiple final outputs:
+
+```{sh eval=FALSE}
+rule all:
+  input: 
+    "results/plot.png",
+    "results/stats.tsv"
+```
+
+### A regular rule
+
+The regular rules define the path to reach the final outputs. Each rule at least must have a:
+
+- **Name:** e.g., rule clean_data.
+- **Input:** files or results needed.
+- **Output:** files the step produces.
+- **Command:** the command or script that performs the transformation.
+
+This rule, for example, outputs the row counts of a file to another file:
+
+```{sh eval=FALSE}
+rule count_lines:
+  input:
+    "data/sample1.txt"
+  output:
+    "results/sample1.txt"
+  shell:
+    "wc -l {input} | awk '{{print $1}}' > {output}"
+```
+
+#### Name
+
+It must be unique, and ideally informative, as it will be used to identify the rules in the overview files, logs, etc. If you use repeated names, snakemake will complain and stop working.
+
+#### Input and output
+
+Snakemake lets you describe input and output files in several convenient ways.
+
+##### Single file
+
+```{sh eval=FALSE}
+rule count_lines:
+  input: "data/sample1.txt"
+  output: "refs/genome.fa.fai"
+  shell: "samtools faidx {input}"
+```
+
+or
+
+```{sh eval=FALSE}
+rule count_lines:
+  input: 
+    "data/sample1.txt"
+  output: 
+    "refs/genome.fa.fai"
+  shell:  
+    "samtools faidx {input}"
+```
+
+##### Multiple unordered files
+
+```{sh eval=FALSE}
+rule count_lines:
+  input:  ["results/a.counts.txt", "results/b.counts.txt"]
+  output: "results/merged.tsv"
+  shell:  "cat {input} > {output}"
+```
+
+In this case, `{input}` expands to a space-separated list, this example resulting in:
+
+```{sh eval=FALSE}
+"cat results/a.counts.txt results/b.counts.txt > results/merged.tsv"
+```
+
+##### Named children (recommended for clarity)
+
+```{sh eval=FALSE}
+rule count_lines:
+  input:
+    read1="reads/sample1_R1.fastq.gz",
+    read2="reads/sample1_R2.fastq.gz",
+    ref="refs/genome.fa"
+  output:
+    bam="results/sample1.bam"
+  shell:
+    "bwa mem {input.ref} {input.read1} {input.read2} | "
+    "samtools view -b -o {output.bam} 2> {log.err}"
+```
+
+Use dot notation like `{input.read1}`, `{output.bam}`, etc.
+
+#### Command
+
+Snakemake gives you several ways to express the command of a rule. 
+
+##### Shell
+
+The most common one is a regular shell command:
+
+```{sh eval=FALSE}
+rule count_lines:
+  input:
+    "data/sample1.txt"
+  output:
+    "results/sample1.txt"
+  shell:
+    "wc -l {input} | awk '{{print $1}}' > {output}"
+```
+
+The command definition can also be more complex, and expressed in multiple lines:
+
+```{sh eval=FALSE}
+rule count_lines:
+  input:
+    "data/sample1.txt"
+  output:
+    "results/sample1.txt"
+  shell:
+    """
+    coverm genome \
+        -b {input} \
+         -s _ \
+         -m relative_abundance count \
+        --min-covered-fraction 0 \
+        > {output}
+
+    if [ $(stat -c '%s' {input}) -lt 1 ]
+     then
+     rm {input}
+    fi
+    """
+```
+
+##### Script
+
+Or can run python scripts instead:
+
+```{sh eval=FALSE}
+rule count_lines:
+  input:
+    "data/sample1.txt"
+  output:
+    "results/sample1.txt"
+  script: "scripts/normalize.py"
+```
+
+##### Run
+
+Or an inline Python block:
+
+```{sh eval=FALSE}
+rule concat:
+    input:  ["pieces/a.txt", "pieces/b.txt"]
+    output: "all.txt"
+    run:
+        with open(output[0], "w") as out:
+            for p in input:
+                out.write(open(p).read())
+```
+
+
+#### Child arguments
+
+## Linking rules together
+
+One of Snakemake’s most powerful features is that you don’t need to manually tell it the order in which to run rules. Instead, Snakemake infers the correct sequence automatically by looking at:
+
+- The output files of one rule
+- The input files of another
+
+When the output of one rule matches the input of another, Snakemake creates a connection between them—this connection is a dependency. Let's see an example:
+
+```{sh eval=FALSE}
+rule all:
+    input: "results/summary.txt"
+
+rule preprocess:
+    input: "raw/data.csv"
+    output: "processed/data_clean.csv"
+    shell: "python scripts/clean_data.py {input} {output}"
+
+rule summarize:
+    input: "processed/data_clean.csv"
+    output: "results/summary.txt"
+    shell: "python scripts/summarize.py {input} {output}"
+```
+
+## Executing the pipeline
+
+The execution of the pipeline is very straightforward. From the command line, in the directory containing your Snakefile, just run:
+
+```{sh eval=FALSE}
+snakemake
+```
+
+By default, Snakemake looks for a file named Snakefile in the current directory, or in the `workflow` directory, both with and without a capital S.
+
+- `snakefile`
+- `Snakefile`
+- `workflow/snakefile`
+- `workflow/Snakefile`
+
+It is also possible to define a different name for the snakefile, usually with the extension `.smk`. If so, you need to tell snakemake where the snakefile is:
+
+```{sh eval=FALSE}
+snakemake -s mydirectory/mysnakefile.smk
+```
 
 # Course environment
 

@@ -2039,9 +2039,23 @@ color: #a52929;
 <ul>
 <li class="chapter" data-level="4.1" data-path="high-performance-computation.html"><a href="high-performance-computation.html#modules"><i class="fa fa-check"></i><b>4.1</b> Modules</a></li>
 <li class="chapter" data-level="4.2" data-path="high-performance-computation.html"><a href="high-performance-computation.html#screen"><i class="fa fa-check"></i><b>4.2</b> Screen</a></li>
-<li class="chapter" data-level="4.3" data-path="high-performance-computation.html"><a href="high-performance-computation.html#slurm"><i class="fa fa-check"></i><b>4.3</b> SLURM</a></li>
+<li class="chapter" data-level="4.3" data-path="high-performance-computation.html"><a href="high-performance-computation.html#slurm"><i class="fa fa-check"></i><b>4.3</b> SLURM</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="high-performance-computation.html"><a href="high-performance-computation.html#job-scheduler"><i class="fa fa-check"></i><b>4.3.1</b> Job scheduler</a></li>
+<li class="chapter" data-level="4.3.2" data-path="high-performance-computation.html"><a href="high-performance-computation.html#interactive-job"><i class="fa fa-check"></i><b>4.3.2</b> Interactive job</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="snakemake.html"><a href="snakemake.html"><i class="fa fa-check"></i><b>5</b> Snakemake</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="snakemake.html"><a href="snakemake.html"><i class="fa fa-check"></i><b>5</b> Snakemake</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="snakemake.html"><a href="snakemake.html#the-snakefile"><i class="fa fa-check"></i><b>5.1</b> The Snakefile</a></li>
+<li class="chapter" data-level="5.2" data-path="snakemake.html"><a href="snakemake.html#the-rules"><i class="fa fa-check"></i><b>5.2</b> The rules</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="snakemake.html"><a href="snakemake.html#the-all-rule"><i class="fa fa-check"></i><b>5.2.1</b> The ALL rule</a></li>
+<li class="chapter" data-level="5.2.2" data-path="snakemake.html"><a href="snakemake.html#a-regular-rule"><i class="fa fa-check"></i><b>5.2.2</b> A regular rule</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="snakemake.html"><a href="snakemake.html#linking-rules-together"><i class="fa fa-check"></i><b>5.3</b> Linking rules together</a></li>
+<li class="chapter" data-level="5.4" data-path="snakemake.html"><a href="snakemake.html#executing-the-pipeline"><i class="fa fa-check"></i><b>5.4</b> Executing the pipeline</a></li>
+</ul></li>
 <li class="chapter" data-level="6" data-path="course-environment.html"><a href="course-environment.html"><i class="fa fa-check"></i><b>6</b> Course environment</a>
 <ul>
 <li class="chapter" data-level="6.1" data-path="course-environment.html"><a href="course-environment.html#your-directory"><i class="fa fa-check"></i><b>6.1</b> Your directory</a></li>
@@ -2103,25 +2117,40 @@ color: #a52929;
             <section class="normal" id="section-">
 <div id="high-performance-computation" class="section level1 hasAnchor" number="4">
 <h1><span class="header-section-number">Chapter 4</span> High Performance Computation<a href="high-performance-computation.html#high-performance-computation" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>High-Performance Computing (HPC) refers to the use of powerful computers and parallel processing techniques to
+solve complex computational problems that require significant processing power and memory. HPC systems,
+often referred to as supercomputers or clusters, are designed to perform large-scale computations at high speeds,
+enabling researchers and scientists to tackle problems that would be infeasible on standard computers.</p>
 <div id="modules" class="section level2 hasAnchor" number="4.1">
 <h2><span class="header-section-number">4.1</span> Modules<a href="high-performance-computation.html#modules" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>We will need to load two key modules to run the workshop. If you have your own conda, consider deactivating it temporarily to ensure the exercises run smoothly.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb1-1"><a href="high-performance-computation.html#cb1-1" tabindex="-1"></a><span class="co"># Ensure there is nothing loaded</span></span>
+<p>Modules are a way to manage and organise software packages on HPC systems. They allow users to easily load, unload, and
+switch between different software versions and configurations without interfering with each other.
+Modules help maintain a clean and organised environment, making it easier for users to access the software they need for their work.</p>
+<p>We will need to load two key modules to run our pipelines. If you have your own conda, consider deactivating it
+temporarily to ensure the exercises run smoothly.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb1-1"><a href="high-performance-computation.html#cb1-1" tabindex="-1"></a><span class="co"># Remove any previously loaded modules</span></span>
 <span id="cb1-2"><a href="high-performance-computation.html#cb1-2" tabindex="-1"></a><span class="ex">module</span> purge</span>
 <span id="cb1-3"><a href="high-performance-computation.html#cb1-3" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="high-performance-computation.html#cb1-4" tabindex="-1"></a><span class="co"># Load the relevant modules</span></span>
-<span id="cb1-5"><a href="high-performance-computation.html#cb1-5" tabindex="-1"></a><span class="ex">module</span> load snakemake/9.4.0</span>
-<span id="cb1-6"><a href="high-performance-computation.html#cb1-6" tabindex="-1"></a><span class="ex">module</span> load miniconda/py39_23.1</span>
-<span id="cb1-7"><a href="high-performance-computation.html#cb1-7" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="high-performance-computation.html#cb1-8" tabindex="-1"></a><span class="co"># List the loaded modules</span></span>
-<span id="cb1-9"><a href="high-performance-computation.html#cb1-9" tabindex="-1"></a><span class="ex">module</span> list</span></code></pre></div>
+<span id="cb1-4"><a href="high-performance-computation.html#cb1-4" tabindex="-1"></a><span class="co"># Check for desired modules</span></span>
+<span id="cb1-5"><a href="high-performance-computation.html#cb1-5" tabindex="-1"></a><span class="ex">module</span> avail snakemake</span>
+<span id="cb1-6"><a href="high-performance-computation.html#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="high-performance-computation.html#cb1-7" tabindex="-1"></a><span class="co"># Load the relevant modules</span></span>
+<span id="cb1-8"><a href="high-performance-computation.html#cb1-8" tabindex="-1"></a><span class="ex">module</span> load snakemake/9.4.0</span>
+<span id="cb1-9"><a href="high-performance-computation.html#cb1-9" tabindex="-1"></a><span class="ex">module</span> load miniconda/py39_23.1</span>
+<span id="cb1-10"><a href="high-performance-computation.html#cb1-10" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="high-performance-computation.html#cb1-11" tabindex="-1"></a><span class="co"># List the loaded modules</span></span>
+<span id="cb1-12"><a href="high-performance-computation.html#cb1-12" tabindex="-1"></a><span class="ex">module</span> list</span></code></pre></div>
 <p>Use should see exactly this:</p>
 <pre><code>Currently Loaded Modulefiles:
  1) miniconda/py39_23.1   2) snakemake/9.4.0</code></pre>
 </div>
 <div id="screen" class="section level2 hasAnchor" number="4.2">
 <h2><span class="header-section-number">4.2</span> Screen<a href="high-performance-computation.html#screen" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Screen is a simple tool that keeps your command-line session running on a server even if your internet drops or you close your laptop. Think of it like putting your terminal in a locker—you can step away and later unlock it to find everything exactly where you left it. It also lets you make several “tabs” (windows) inside one SSH login and switch between them. On HPC clusters where tasks can run for hours, starting them inside Screen keeps them safe and easy to rejoin. It’s lightweight and saves you from losing work.</p>
+<p>Screen is a simple tool that keeps your command-line session running on a server even if your internet
+drops or you close your laptop. Think of it like putting your terminal in a locker—you can step away and later
+unlock it to find everything exactly where you left it. It also lets you make several “tabs” (windows) inside one
+SSH login and switch between them. On HPC clusters where tasks can run for hours, starting them inside Screen keeps
+them safe and easy to rejoin. It’s lightweight and saves you from losing work.</p>
 <p>To create a screen session for the entire duration of the workshop:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb3-1"><a href="high-performance-computation.html#cb3-1" tabindex="-1"></a><span class="ex">screen</span> <span class="at">-S</span> hmmo_screen</span></code></pre></div>
 <p>To get out from the session, you must type <code>ctrl+a d</code></p>
@@ -2131,6 +2160,67 @@ color: #a52929;
 </div>
 <div id="slurm" class="section level2 hasAnchor" number="4.3">
 <h2><span class="header-section-number">4.3</span> SLURM<a href="high-performance-computation.html#slurm" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>SLURM (Simple Linux Utility for Resource Management) is a widely used open-source job scheduler and workload manager for
+high-performance computing (HPC) clusters. It handles three main tasks:</p>
+<ul>
+<li><strong>Resource allocation</strong> deciding which jobs run on which nodes.</li>
+<li><strong>Job scheduling</strong> prioritising and queuing jobs.</li>
+<li><strong>Job execution</strong> launching and monitoring jobs across compute nodes.</li>
+</ul>
+<p>Snakemake can submit workflow rules directly to SLURM. When a rule is executed this way, Snakemake doesn’t run the job itself;
+instead, it generates an sbatch command with the appropriate resource requests and submits it to SLURM. From Snakemake 8 onwards,
+it requires installation of the (executor plugin)[<a href="https://anaconda.org/bioconda/snakemake-executor-plugin-slurm" class="uri">https://anaconda.org/bioconda/snakemake-executor-plugin-slurm</a>].</p>
+<div id="job-scheduler" class="section level3 hasAnchor" number="4.3.1">
+<h3><span class="header-section-number">4.3.1</span> Job scheduler<a href="high-performance-computation.html#job-scheduler" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>On Mjolnir, we use SLURM as a job scheduler to manage and allocate computational resources efficiently.
+SLURM allows users to submit jobs to a queue, where they wait for available resources before execution.
+This system helps ensure fair resource distribution among users and optimizes the overall performance of the cluster.</p>
+<p>When you submit a job using SLURM, you specify the resources you need (like CPU cores, memory, and time).
+SLURM then places your job in a queue and runs it when the requested resources become available.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb5-1"><a href="high-performance-computation.html#cb5-1" tabindex="-1"></a><span class="co"># Submit a job to the SLURM scheduler</span></span>
+<span id="cb5-2"><a href="high-performance-computation.html#cb5-2" tabindex="-1"></a><span class="ex">sbatch</span> <span class="at">-J</span> {job_name} <span class="at">--partition</span><span class="op">=</span>cpuqueue <span class="at">--qos</span><span class="op">=</span>normal <span class="at">--cpus-per-task</span><span class="op">=</span>12 <span class="at">--mem</span><span class="op">=</span>8G <span class="at">--time</span><span class="op">=</span>5:00:00 <span class="at">--wrap</span><span class="op">=</span><span class="st">&quot;{command_to_run}&quot;</span></span>
+<span id="cb5-3"><a href="high-performance-computation.html#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="high-performance-computation.html#cb5-4" tabindex="-1"></a><span class="co"># Shell file example</span></span>
+<span id="cb5-5"><a href="high-performance-computation.html#cb5-5" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&gt;</span> job_to_launch.sh <span class="op">&lt;&lt; &#39;EOF&#39;</span></span>
+<span id="cb5-6"><a href="high-performance-computation.html#cb5-6" tabindex="-1"></a><span class="st">#!/bin/bash</span></span>
+<span id="cb5-7"><a href="high-performance-computation.html#cb5-7" tabindex="-1"></a><span class="st">#SBATCH -J example_job</span></span>
+<span id="cb5-8"><a href="high-performance-computation.html#cb5-8" tabindex="-1"></a><span class="st">#SBATCH --partition=cpuqueue</span></span>
+<span id="cb5-9"><a href="high-performance-computation.html#cb5-9" tabindex="-1"></a><span class="st">#SBATCH --qos=normal</span></span>
+<span id="cb5-10"><a href="high-performance-computation.html#cb5-10" tabindex="-1"></a><span class="st">#SBATCH --cpus-per-task=12</span></span>
+<span id="cb5-11"><a href="high-performance-computation.html#cb5-11" tabindex="-1"></a><span class="st">#SBATCH --mem=8G</span></span>
+<span id="cb5-12"><a href="high-performance-computation.html#cb5-12" tabindex="-1"></a><span class="st">#SBATCH --time=5:00:00 </span></span>
+<span id="cb5-13"><a href="high-performance-computation.html#cb5-13" tabindex="-1"></a><span class="st">{command_to_run}</span></span>
+<span id="cb5-14"><a href="high-performance-computation.html#cb5-14" tabindex="-1"></a><span class="op">EOF</span></span>
+<span id="cb5-15"><a href="high-performance-computation.html#cb5-15" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="high-performance-computation.html#cb5-16" tabindex="-1"></a><span class="ex">sbatch</span> job_to_launch.sh</span>
+<span id="cb5-17"><a href="high-performance-computation.html#cb5-17" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="high-performance-computation.html#cb5-18" tabindex="-1"></a><span class="co"># Check the status of your jobs in the queue</span></span>
+<span id="cb5-19"><a href="high-performance-computation.html#cb5-19" tabindex="-1"></a><span class="ex">squeue</span> <span class="at">-u</span> {ku-id}</span></code></pre></div>
+</div>
+<div id="interactive-job" class="section level3 hasAnchor" number="4.3.2">
+<h3><span class="header-section-number">4.3.2</span> Interactive job<a href="high-performance-computation.html#interactive-job" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>On a shared cluster like Mjolnir, the entry (login) nodes are the front door: they’re meant for quick, lightweight tasks like connecting, moving files, loading modules, editing scripts, and submitting jobs. They are shared by everyone and deliberately constrained (CPU, memory, long-running limits). Running heavy computations there slows the system for all users and can trigger automatic kills from cluster policies. An interactive session gives you a reserved slice of the compute nodes through the scheduler (e.g., Slurm).</p>
+<p>When you are in the entry node, the following command should return.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb6-1"><a href="high-performance-computation.html#cb6-1" tabindex="-1"></a><span class="fu">hostname</span></span></code></pre></div>
+<pre><code>mjolnirgate01fl.unicph.domain</code></pre>
+<p>In this workshop, each participant will get allocated 4 CPUs and 16GB of memory at node mjolnircomp14fl. When that time is over, the session will close automatically.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb8-1"><a href="high-performance-computation.html#cb8-1" tabindex="-1"></a><span class="ex">srun</span> <span class="dt">\</span></span>
+<span id="cb8-2"><a href="high-performance-computation.html#cb8-2" tabindex="-1"></a>  <span class="at">--job-name</span><span class="op">=</span>snakemake_workshop <span class="dt">\</span></span>
+<span id="cb8-3"><a href="high-performance-computation.html#cb8-3" tabindex="-1"></a>  <span class="at">--account</span><span class="op">=</span>teaching <span class="dt">\</span></span>
+<span id="cb8-4"><a href="high-performance-computation.html#cb8-4" tabindex="-1"></a>  <span class="at">--reservation</span><span class="op">=</span>snakemake_hackaton <span class="dt">\</span></span>
+<span id="cb8-5"><a href="high-performance-computation.html#cb8-5" tabindex="-1"></a>  <span class="at">--partition</span><span class="op">=</span>cpuqueue <span class="dt">\</span></span>
+<span id="cb8-6"><a href="high-performance-computation.html#cb8-6" tabindex="-1"></a>  <span class="at">--nodes</span><span class="op">=</span>1 <span class="dt">\</span></span>
+<span id="cb8-7"><a href="high-performance-computation.html#cb8-7" tabindex="-1"></a>  <span class="at">--nodelist</span><span class="op">=</span>mjolnircomp14fl <span class="dt">\</span></span>
+<span id="cb8-8"><a href="high-performance-computation.html#cb8-8" tabindex="-1"></a>  <span class="at">--time</span><span class="op">=</span>08:00:00 <span class="dt">\</span></span>
+<span id="cb8-9"><a href="high-performance-computation.html#cb8-9" tabindex="-1"></a>  <span class="at">--mem</span><span class="op">=</span>16G <span class="dt">\</span></span>
+<span id="cb8-10"><a href="high-performance-computation.html#cb8-10" tabindex="-1"></a>  <span class="at">--cpus-per-task</span><span class="op">=</span>4 <span class="dt">\</span></span>
+<span id="cb8-11"><a href="high-performance-computation.html#cb8-11" tabindex="-1"></a>  <span class="at">--pty</span> bash <span class="at">-I</span></span></code></pre></div>
+<p>This will display for a few seconds, after which you will get connected to the computation node.</p>
+<pre><code>srun: job XXXXXXXXX queued and waiting for resources</code></pre>
+<p>To verify you are in the computing node the <code>hostname</code> command should now display:</p>
+<pre><code>mjolnircomp14fl.unicph.domain</code></pre>
+<p>To exit the interactive job, just type <code>exit</code>.</p>
+</div>
 </div>
 </div>
             </section>
