@@ -26,7 +26,13 @@ knitr::opts_chunk$set(
 
 **Welcome to the Host-Microbiota Multi-Omics Course!**
 
-This webbook contains the materials for the practicals of the course.
+This webbook contains the materials for the practicals of the course. Each practical is organized in 
+a separate chapter, which can be accessed from the sidebar on the left. The materials include step-by-step
+instructions, code snippets, and explanations to help you understand the concepts and techniques covered in the course.
+
+Note that these scripts are not meant to be run all at once. Instead, please follow the instructions in each chapter
+to run the code in the appropriate sections. Feel free to modify the code and experiment with different parameters to 
+see how they affect the results.
 
 
 

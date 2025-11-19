@@ -2117,10 +2117,23 @@ color: #a52929;
             <section class="normal" id="section-">
 <div id="microbial-metagenome" class="section level1 unnumbered hasAnchor">
 <h1>Microbial metagenome<a href="microbial-metagenome.html#microbial-metagenome" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Microbial metagenomic assembly and binning are key steps in reconstructing the genomes of microorganisms present
+in complex communities. This chapter describes the Snakemake rules that perform metagenomic assembly using MEGAHIT,
+create Bowtie2 indices for the assemblies, map reads back to the assemblies, calculate contig coverage, and bin contigs
+into metagenome-assembled genomes (MAGs) using multiple binning tools (MetaBAT2, MaxBin2, SemiBin2). Finally, it covers
+the refinement of bins using Binette to produce high-quality MAGs for downstream analyses.</p>
 <div id="assembly" class="section level2 hasAnchor" number="7.7">
 <h2><span class="header-section-number">7.7</span> Assembly<a href="microbial-metagenome.html#assembly" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This rule performs metagenomic assembly using MEGAHIT. For each defined assembly group, it gathers the metagenomic paired-end reads (R1 and R2) from one or more samples, combines them, and runs MEGAHIT to reconstruct longer contiguous sequences (contigs) from the short reads. This can be a single-sample assembly or a co-assembly of multiple related samples, depending on how ASSEMBLY_TO_SAMPLES is defined. The result is a FASTA file containing assembled contigs that represent fragments of microbial genomes present in the samples, filtered to retain only contigs above a certain minimum length to focus on more reliable sequences.</p>
-<p>The rule ensures that the output directory is clean before each run, uses multiple threads and dynamically allocated memory to handle larger datasets, and then standardizes the output by renaming MEGAHIT’s final contig file to a consistent path and filename. This assembled contig file becomes the basis for downstream cataloging steps such as binning, annotation, and construction of metagenome-assembled genomes (MAGs) in the host–microbiota multi-omics workflow.</p>
+<p>This rule performs metagenomic assembly using MEGAHIT. For each defined assembly group,
+it gathers the metagenomic paired-end reads (R1 and R2) from one or more samples, combines them,
+and runs MEGAHIT to reconstruct longer contiguous sequences (contigs) from the short reads. This can be a
+single-sample assembly or a co-assembly of multiple related samples, depending on how ASSEMBLY_TO_SAMPLES is defined.
+The result is a FASTA file containing assembled contigs that represent fragments of microbial genomes present in the
+samples, filtered to retain only contigs above a certain minimum length to focus on more reliable sequences.</p>
+<p>The rule ensures that the output directory is clean before each run, uses multiple threads and dynamically allocated
+memory to handle larger datasets, and then standardizes the output by renaming MEGAHIT’s final contig file to a consistent
+path and filename. This assembled contig file becomes the basis for downstream cataloging steps such as binning, annotation,
+and construction of metagenome-assembled genomes (MAGs) in the host-microbiota multi-omics workflow.</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb31-1"><a href="microbial-metagenome.html#cb31-1" tabindex="-1"></a><span class="ex">rule</span> assembly:</span>
 <span id="cb31-2"><a href="microbial-metagenome.html#cb31-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
 <span id="cb31-3"><a href="microbial-metagenome.html#cb31-3" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>lambda <span class="ex">wildcards:</span> [f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{sample}_1.fq.gz&quot;</span> for sample in ASSEMBLY_TO_SAMPLES<span class="pp">[</span><span class="ss">wildcards.assembly</span><span class="pp">]</span>],</span>
@@ -2144,8 +2157,15 @@ color: #a52929;
 </div>
 <div id="assembly-index" class="section level2 hasAnchor" number="7.8">
 <h2><span class="header-section-number">7.8</span> Assembly index<a href="microbial-metagenome.html#assembly-index" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This rule creates a Bowtie2 index for each metagenomic assembly generated in the previous step. It takes the assembled contigs (the reconstructed metagenome) and runs bowtie2-build to generate the indexing files required for efficient read alignment. Indexing metagenomic assemblies is essential for downstream processes such as read recruitment, contig coverage estimation, binning, and quality assessment of assembled genomes.</p>
-<p>The rule ensures the index is stored alongside the assembly under a consistent naming scheme, allowing later rules to easily locate it. It uses modest computational resources, since indexing contigs is generally lightweight compared to assembly, and loads the correct Bowtie2 module to guarantee reproducibility. This step prepares the assembled contigs to be used as a searchable reference in subsequent cataloging analyses.</p>
+<p>This rule creates a Bowtie2 index for each metagenomic assembly generated in the previous step.
+It takes the assembled contigs (the reconstructed metagenome) and runs bowtie2-build to generate the
+indexing files required for efficient read alignment. Indexing metagenomic assemblies is essential for
+downstream processes such as read recruitment, contig coverage estimation, binning, and quality assessment
+of assembled genomes.</p>
+<p>The rule ensures the index is stored alongside the assembly under a consistent naming scheme, allowing later
+rules to easily locate it. It uses modest computational resources, since indexing contigs is generally
+lightweight compared to assembly, and loads the correct Bowtie2 module to guarantee reproducibility. This step
+prepares the assembled contigs to be used as a searchable reference in subsequent cataloging analyses.</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb32-1"><a href="microbial-metagenome.html#cb32-1" tabindex="-1"></a><span class="ex">rule</span> assembly_index:</span>
 <span id="cb32-2"><a href="microbial-metagenome.html#cb32-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
 <span id="cb32-3"><a href="microbial-metagenome.html#cb32-3" tabindex="-1"></a>        <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/cataloging/megahit/{{assembly}}/{{assembly}}.fna&quot;</span></span>
@@ -2161,8 +2181,16 @@ color: #a52929;
 </div>
 <div id="assembly-mapping" class="section level2 hasAnchor" number="7.9">
 <h2><span class="header-section-number">7.9</span> Assembly mapping<a href="microbial-metagenome.html#assembly-mapping" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This rule maps each sample’s metagenomic reads back to a specific metagenomic assembly using Bowtie2. By aligning the cleaned, host-filtered reads to the assembled contigs, the workflow can quantify how much support each contig has across samples—information that is essential for downstream steps such as binning, abundance estimation, contamination checking, and cross-sample comparative analyses. The rule uses the Bowtie2 index generated for the assembly and the final FASTQ files produced during host–microbiota read separation.</p>
-<p>The alignment output is directly converted to a sorted BAM file through samtools, ensuring the result is immediately usable for coverage calculation or other depth-based analyses. With multi-threading support and adaptive resource allocation, the rule efficiently handles both small and large datasets. This mapping step links reads back to the assembly, turning raw contigs into quantitatively interpretable components of the microbial community.</p>
+<p>This rule maps each sample’s metagenomic reads back to a specific metagenomic assembly using Bowtie2.
+By aligning the cleaned, host-filtered reads to the assembled contigs, the workflow can quantify how much
+support each contig has across samples—information that is essential for downstream steps such as binning,
+abundance estimation, contamination checking, and cross-sample comparative analyses. The rule uses the Bowtie2
+index generated for the assembly and the final FASTQ files produced during host–microbiota read separation.</p>
+<p>The alignment output is directly converted to a sorted BAM file through samtools, ensuring the result is
+immediately usable for coverage calculation or other depth-based analyses. With multi-threading support and
+adaptive resource allocation, the rule efficiently handles both small and large datasets. This mapping step
+links reads back to the assembly, turning raw contigs into quantitatively interpretable components of the
+microbial community.</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb33-1"><a href="microbial-metagenome.html#cb33-1" tabindex="-1"></a><span class="ex">rule</span> assembly_map:</span>
 <span id="cb33-2"><a href="microbial-metagenome.html#cb33-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
 <span id="cb33-3"><a href="microbial-metagenome.html#cb33-3" tabindex="-1"></a>        <span class="va">index</span><span class="op">=</span>lambda <span class="ex">wildcards:</span> f<span class="st">&quot;{OUTPUT_DIR}/cataloging/megahit/{wildcards.assembly}/{wildcards.assembly}.rev.2.bt2&quot;</span>,</span>
@@ -2179,8 +2207,14 @@ color: #a52929;
 </div>
 <div id="assembly-map-depth" class="section level2 hasAnchor" number="7.10">
 <h2><span class="header-section-number">7.10</span> Assembly map depth<a href="microbial-metagenome.html#assembly-map-depth" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This rule computes per-contig read depth across all samples associated with a given assembly. It takes the set of BAM files produced by mapping each sample’s metagenomic reads back to the assembly and uses <code>jgi_summarize_bam_contig_depths</code> (from MetaBAT2) to generate a depth table. This table reports how many reads align to each contig in each sample—information that is essential for binning tools, which rely on differential coverage patterns to group contigs into metagenome-assembled genomes (MAGs).</p>
-<p>The rule outputs two versions of the depth file: the full MetaBAT2-compatible depth matrix and a simplified depth file formatted for MaxBin2. These coverage profiles are a key input for downstream binning workflows, as they allow algorithms to distinguish which contigs likely originate from the same genome.</p>
+<p>This rule computes per-contig read depth across all samples associated with a given assembly.
+It takes the set of BAM files produced by mapping each sample’s metagenomic reads back to the assembly
+and uses <code>jgi_summarize_bam_contig_depths</code> (from MetaBAT2) to generate a depth table. This table reports
+how many reads align to each contig in each sample—information that is essential for binning tools, which
+rely on differential coverage patterns to group contigs into metagenome-assembled genomes (MAGs).</p>
+<p>The rule outputs two versions of the depth file: the full MetaBAT2-compatible depth matrix and a simplified
+depth file formatted for MaxBin2. These coverage profiles are a key input for downstream binning workflows,
+as they allow algorithms to distinguish which contigs likely originate from the same genome.</p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb34-1"><a href="microbial-metagenome.html#cb34-1" tabindex="-1"></a><span class="ex">rule</span> assembly_map_depth:</span>
 <span id="cb34-2"><a href="microbial-metagenome.html#cb34-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
 <span id="cb34-3"><a href="microbial-metagenome.html#cb34-3" tabindex="-1"></a>        <span class="ex">lambda</span> wildcards: [</span>
@@ -2198,10 +2232,18 @@ color: #a52929;
 </div>
 <div id="binning" class="section level2 hasAnchor" number="7.11">
 <h2><span class="header-section-number">7.11</span> Binning<a href="microbial-metagenome.html#binning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>MetaBAT2, MaxBin2, and SemiBin2 are complementary metagenomic binning tools that take assembled contigs and coverage information and attempt to cluster contigs into metagenome-assembled genomes (MAGs). Because no single algorithm is perfect for all datasets, using multiple binners increases the robustness and completeness of the final genome catalog. Each tool uses different combinations of signals—coverage patterns across samples, sequence composition, and marker-gene information—to infer which contigs originate from the same microbial genome. Running all three methods, then harmonizing the outputs, provides a stronger basis for downstream bin refinement and MAG quality filtering.</p>
+<p>MetaBAT2, MaxBin2, and SemiBin2 are complementary metagenomic binning tools that take assembled contigs
+and coverage information and attempt to cluster contigs into metagenome-assembled genomes (MAGs). Because
+no single algorithm is perfect for all datasets, using multiple binners increases the robustness and completeness
+of the final genome catalog. Each tool uses different combinations of signals—coverage patterns across samples,
+sequence composition, and marker-gene information—to infer which contigs originate from the same microbial genome.
+Running all three methods, then harmonizing the outputs, provides a stronger basis for downstream bin refinement
+and MAG quality filtering.</p>
 <div id="metabat2" class="section level3 hasAnchor" number="7.11.1">
 <h3><span class="header-section-number">7.11.1</span> MetaBat2<a href="microbial-metagenome.html#metabat2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>MetaBAT2 clusters contigs based mainly on differential coverage across samples and tetranucleotide frequency, producing a TSV mapping contigs to bins. It is fast, widely used, and effective when multiple samples provide rich coverage variation.</p>
+<p>MetaBAT2 clusters contigs based mainly on differential coverage across samples and tetranucleotide frequency,
+producing a TSV mapping contigs to bins. It is fast, widely used, and effective when multiple samples provide
+rich coverage variation.</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb35-1"><a href="microbial-metagenome.html#cb35-1" tabindex="-1"></a><span class="ex">rule</span> metabat2:</span>
 <span id="cb35-2"><a href="microbial-metagenome.html#cb35-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
 <span id="cb35-3"><a href="microbial-metagenome.html#cb35-3" tabindex="-1"></a>        <span class="va">assembly</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/cataloging/megahit/{{assembly}}/{{assembly}}.fna&quot;</span>,</span>
@@ -2215,7 +2257,9 @@ color: #a52929;
 </div>
 <div id="maxbin2" class="section level3 hasAnchor" number="7.11.2">
 <h3><span class="header-section-number">7.11.2</span> MaxBin2<a href="microbial-metagenome.html#maxbin2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>MaxBin2 uses marker-gene detection, sequence composition, and abundance patterns to group contigs. It tends to perform well for genomes with typical marker sets, and the workflow includes logic to skip running it on very small assemblies where meaningful binning is unlikely.</p>
+<p>MaxBin2 uses marker-gene detection, sequence composition, and abundance patterns to group contigs. It tends to
+perform well for genomes with typical marker sets, and the workflow includes logic to skip running it on very small
+assemblies where meaningful binning is unlikely.</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb36-1"><a href="microbial-metagenome.html#cb36-1" tabindex="-1"></a><span class="ex">rule</span> maxbin2:</span>
 <span id="cb36-2"><a href="microbial-metagenome.html#cb36-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
 <span id="cb36-3"><a href="microbial-metagenome.html#cb36-3" tabindex="-1"></a>        <span class="va">assembly</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/cataloging/megahit/{{assembly}}/{{assembly}}.fna&quot;</span>,</span>
@@ -2240,7 +2284,10 @@ color: #a52929;
 </div>
 <div id="semibin2" class="section level3 hasAnchor" number="7.11.3">
 <h3><span class="header-section-number">7.11.3</span> SemiBin2<a href="microbial-metagenome.html#semibin2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>SemiBin2 performs machine-learning–based genome binning using the assembly together with all sample-specific BAM files. It integrates sequence composition, depth information, and neural-network–derived embeddings to cluster contigs into high-quality genome bins. This rule runs SemiBin2 in its “single easy bin” mode, which automates preprocessing steps such as marker gene detection and coverage calculation.</p>
+<p>SemiBin2 performs machine-learning–based genome binning using the assembly together with all sample-specific BAM files.
+It integrates sequence composition, depth information, and neural-network–derived embeddings to cluster contigs into
+high-quality genome bins. This rule runs SemiBin2 in its “single easy bin” mode, which automates preprocessing steps
+such as marker gene detection and coverage calculation.</p>
 <div class="sourceCode" id="cb37"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb37-1"><a href="microbial-metagenome.html#cb37-1" tabindex="-1"></a><span class="ex">rule</span> semibin2:</span>
 <span id="cb37-2"><a href="microbial-metagenome.html#cb37-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
 <span id="cb37-3"><a href="microbial-metagenome.html#cb37-3" tabindex="-1"></a>        <span class="va">assembly</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/cataloging/megahit/{{assembly}}/{{assembly}}.fna&quot;</span>,</span>
@@ -2271,7 +2318,8 @@ color: #a52929;
 <span id="cb37-28"><a href="microbial-metagenome.html#cb37-28" tabindex="-1"></a><span class="st">            SemiBin2 single_easy_bin -i {input.assembly} -b {input.bam} -o {params.outdir} -m 1500 -t {threads} --compression none</span></span>
 <span id="cb37-29"><a href="microbial-metagenome.html#cb37-29" tabindex="-1"></a><span class="st">        fi</span></span>
 <span id="cb37-30"><a href="microbial-metagenome.html#cb37-30" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
-<p>This rule simply reformats its existing contig_bins.tsv output into a consistent table for integration with the other binners’ results.</p>
+<p>This rule simply reformats its existing contig_bins.tsv output into a consistent table for integration with the
+other binners’ results.</p>
 <div class="sourceCode" id="cb38"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb38-1"><a href="microbial-metagenome.html#cb38-1" tabindex="-1"></a><span class="ex">rule</span> semibin2_table:</span>
 <span id="cb38-2"><a href="microbial-metagenome.html#cb38-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
 <span id="cb38-3"><a href="microbial-metagenome.html#cb38-3" tabindex="-1"></a>        <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/cataloging/semibin2/{{assembly}}/contig_bins.tsv&quot;</span></span>
@@ -2287,8 +2335,17 @@ color: #a52929;
 </div>
 <div id="bin-refinement" class="section level2 hasAnchor" number="7.12">
 <h2><span class="header-section-number">7.12</span> Bin refinement<a href="microbial-metagenome.html#bin-refinement" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This checkpoint performs bin refinement and quality assessment by combining the results from the three binners (MetaBAT2, MaxBin2, SemiBin2) using binette. It takes each binner’s contig-to-bin TSV plus the original assembly FASTA and feeds only the non-empty TSV files into binette. Binette then reconciles overlapping or conflicting bin assignments across tools, refines bin boundaries, and evaluates the resulting bins’ completeness and contamination (via CheckM2), producing a final table of bins with quality metrics. This step is where the workflow turns three separate binning runs into a unified, curated set of metagenome-assembled genomes.</p>
-<p>The shell logic first checks which of the individual binner outputs actually contain data (for example, small assemblies may have caused some tools to be skipped), builds a list of valid TSV files, and aborts with an error if none are available. If at least one binner produced bins, binette is run with those inputs and the contig FASTA, writing its results into a dedicated output directory and summarizing the final refined bins in final_bins_quality_reports.tsv.</p>
+<p>This checkpoint performs bin refinement and quality assessment by combining the results from the three binners
+(MetaBAT2, MaxBin2, SemiBin2) using binette. It takes each binner’s contig-to-bin TSV plus the original
+assembly FASTA and feeds only the non-empty TSV files into binette. Binette then reconciles overlapping or
+conflicting bin assignments across tools, refines bin boundaries, and evaluates the resulting bins’ completeness
+and contamination (via CheckM2), producing a final table of bins with quality metrics. This step is where the
+workflow turns three separate binning runs into a unified, curated set of metagenome-assembled genomes.</p>
+<p>The shell logic first checks which of the individual binner outputs actually contain data (for example,
+small assemblies may have caused some tools to be skipped), builds a list of valid TSV files, and aborts with
+an error if none are available. If at least one binner produced bins, binette is run with those inputs and the
+contig FASTA, writing its results into a dedicated output directory and summarizing the final refined bins in
+final_bins_quality_reports.tsv.</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb39-1"><a href="microbial-metagenome.html#cb39-1" tabindex="-1"></a><span class="ex">checkpoint</span> binette:</span>
 <span id="cb39-2"><a href="microbial-metagenome.html#cb39-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
 <span id="cb39-3"><a href="microbial-metagenome.html#cb39-3" tabindex="-1"></a>        <span class="va">metabat2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/cataloging/metabat2/{{assembly}}/{{assembly}}.tsv&quot;</span>,</span>
@@ -2334,8 +2391,15 @@ color: #a52929;
 </div>
 <div id="rename-bins" class="section level2 hasAnchor" number="7.13">
 <h2><span class="header-section-number">7.13</span> Rename bins<a href="microbial-metagenome.html#rename-bins" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This code connects the bin refinement results from Binette to the final, nicely named bin FASTA files that the user will see. The helper function get_bin_fna_sep uses the Binette checkpoint output to (internally) regenerate the list of bin IDs that exist for a given assembly. Conceptually, it tells Snakemake: “for this assembly, there are bins with these IDs, and their sequences live in final_bins/bin_<bin_id>.fa.” That way, the workflow can dynamically adapt to however many bins Binette produced without hard-coding bin names or counts.</p>
-<p>The rename_bins rule then takes each of those Binette bin FASTA files and runs a small Python script (rename_bins.py) to copy/rename them into a standardized, final location: final/{assembly}/{assembly}<em>bin</em>{bin_id}.fa. This step cleans up Binette’s internal naming scheme and produces consistently named MAG files that are easier to track, share, and feed into downstream analyses such as annotation or taxonomic classification.</p>
+<p>This code connects the bin refinement results from Binette to the final, nicely named bin FASTA files
+that the user will see. The helper function get_bin_fna_sep uses the Binette checkpoint output to (internally)
+regenerate the list of bin IDs that exist for a given assembly. Conceptually, it tells Snakemake: “for this
+assembly, there are bins with these IDs, and their sequences live in final_bins/bin_<bin_id>.fa.” That way,
+the workflow can dynamically adapt to however many bins Binette produced without hard-coding bin names or counts.</p>
+<p>The rename_bins rule then takes each of those Binette bin FASTA files and runs a small Python script (rename_bins.py)
+to copy/rename them into a standardized, final location: final/{assembly}/{assembly}<em>bin</em>{bin_id}.fa. This step cleans
+up Binette’s internal naming scheme and produces consistently named MAG files that are easier to track, share, and feed
+into downstream analyses such as annotation or taxonomic classification.</p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb40-1"><a href="microbial-metagenome.html#cb40-1" tabindex="-1"></a></span>
 <span id="cb40-2"><a href="microbial-metagenome.html#cb40-2" tabindex="-1"></a><span class="co"># Regenerate the bin_id wildcard based on the checkpoint results</span></span>
 <span id="cb40-3"><a href="microbial-metagenome.html#cb40-3" tabindex="-1"></a><span class="ex">def</span> get_bin_fna_sep<span class="er">(</span><span class="ex">wildcards</span><span class="kw">)</span><span class="bu">:</span></span>

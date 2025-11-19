@@ -1,10 +1,24 @@
 # Microbial metagenome {-}
 
+Microbial metagenomic assembly and binning are key steps in reconstructing the genomes of microorganisms present 
+in complex communities. This chapter describes the Snakemake rules that perform metagenomic assembly using MEGAHIT, 
+create Bowtie2 indices for the assemblies, map reads back to the assemblies, calculate contig coverage, and bin contigs 
+into metagenome-assembled genomes (MAGs) using multiple binning tools (MetaBAT2, MaxBin2, SemiBin2). Finally, it covers 
+the refinement of bins using Binette to produce high-quality MAGs for downstream analyses.
+
 ## Assembly
 
-This rule performs metagenomic assembly using MEGAHIT. For each defined assembly group, it gathers the metagenomic paired-end reads (R1 and R2) from one or more samples, combines them, and runs MEGAHIT to reconstruct longer contiguous sequences (contigs) from the short reads. This can be a single-sample assembly or a co-assembly of multiple related samples, depending on how ASSEMBLY_TO_SAMPLES is defined. The result is a FASTA file containing assembled contigs that represent fragments of microbial genomes present in the samples, filtered to retain only contigs above a certain minimum length to focus on more reliable sequences.
+This rule performs metagenomic assembly using MEGAHIT. For each defined assembly group, 
+it gathers the metagenomic paired-end reads (R1 and R2) from one or more samples, combines them, 
+and runs MEGAHIT to reconstruct longer contiguous sequences (contigs) from the short reads. This can be a 
+single-sample assembly or a co-assembly of multiple related samples, depending on how ASSEMBLY_TO_SAMPLES is defined. 
+The result is a FASTA file containing assembled contigs that represent fragments of microbial genomes present in the 
+samples, filtered to retain only contigs above a certain minimum length to focus on more reliable sequences.
 
-The rule ensures that the output directory is clean before each run, uses multiple threads and dynamically allocated memory to handle larger datasets, and then standardizes the output by renaming MEGAHIT’s final contig file to a consistent path and filename. This assembled contig file becomes the basis for downstream cataloging steps such as binning, annotation, and construction of metagenome-assembled genomes (MAGs) in the host–microbiota multi-omics workflow.
+The rule ensures that the output directory is clean before each run, uses multiple threads and dynamically allocated 
+memory to handle larger datasets, and then standardizes the output by renaming MEGAHIT's final contig file to a consistent 
+path and filename. This assembled contig file becomes the basis for downstream cataloging steps such as binning, annotation, 
+and construction of metagenome-assembled genomes (MAGs) in the host-microbiota multi-omics workflow.
 
 ```{sh eval=FALSE}
 rule assembly:
@@ -32,9 +46,16 @@ rule assembly:
 
 ## Assembly index
 
-This rule creates a Bowtie2 index for each metagenomic assembly generated in the previous step. It takes the assembled contigs (the reconstructed metagenome) and runs bowtie2-build to generate the indexing files required for efficient read alignment. Indexing metagenomic assemblies is essential for downstream processes such as read recruitment, contig coverage estimation, binning, and quality assessment of assembled genomes.
+This rule creates a Bowtie2 index for each metagenomic assembly generated in the previous step. 
+It takes the assembled contigs (the reconstructed metagenome) and runs bowtie2-build to generate the 
+indexing files required for efficient read alignment. Indexing metagenomic assemblies is essential for 
+downstream processes such as read recruitment, contig coverage estimation, binning, and quality assessment 
+of assembled genomes.
 
-The rule ensures the index is stored alongside the assembly under a consistent naming scheme, allowing later rules to easily locate it. It uses modest computational resources, since indexing contigs is generally lightweight compared to assembly, and loads the correct Bowtie2 module to guarantee reproducibility. This step prepares the assembled contigs to be used as a searchable reference in subsequent cataloging analyses.
+The rule ensures the index is stored alongside the assembly under a consistent naming scheme, allowing later 
+rules to easily locate it. It uses modest computational resources, since indexing contigs is generally 
+lightweight compared to assembly, and loads the correct Bowtie2 module to guarantee reproducibility. This step 
+prepares the assembled contigs to be used as a searchable reference in subsequent cataloging analyses.
 
 ```{sh eval=FALSE}
 rule assembly_index:
@@ -53,9 +74,17 @@ rule assembly_index:
 
 ## Assembly mapping
 
-This rule maps each sample’s metagenomic reads back to a specific metagenomic assembly using Bowtie2. By aligning the cleaned, host-filtered reads to the assembled contigs, the workflow can quantify how much support each contig has across samples—information that is essential for downstream steps such as binning, abundance estimation, contamination checking, and cross-sample comparative analyses. The rule uses the Bowtie2 index generated for the assembly and the final FASTQ files produced during host–microbiota read separation.
+This rule maps each sample's metagenomic reads back to a specific metagenomic assembly using Bowtie2. 
+By aligning the cleaned, host-filtered reads to the assembled contigs, the workflow can quantify how much 
+support each contig has across samples—information that is essential for downstream steps such as binning, 
+abundance estimation, contamination checking, and cross-sample comparative analyses. The rule uses the Bowtie2 
+index generated for the assembly and the final FASTQ files produced during host–microbiota read separation.
 
-The alignment output is directly converted to a sorted BAM file through samtools, ensuring the result is immediately usable for coverage calculation or other depth-based analyses. With multi-threading support and adaptive resource allocation, the rule efficiently handles both small and large datasets. This mapping step links reads back to the assembly, turning raw contigs into quantitatively interpretable components of the microbial community.
+The alignment output is directly converted to a sorted BAM file through samtools, ensuring the result is 
+immediately usable for coverage calculation or other depth-based analyses. With multi-threading support and 
+adaptive resource allocation, the rule efficiently handles both small and large datasets. This mapping step 
+links reads back to the assembly, turning raw contigs into quantitatively interpretable components of the 
+microbial community.
 
 ```{sh eval=FALSE}
 rule assembly_map:
@@ -75,9 +104,15 @@ rule assembly_map:
 
 ## Assembly map depth
 
-This rule computes per-contig read depth across all samples associated with a given assembly. It takes the set of BAM files produced by mapping each sample’s metagenomic reads back to the assembly and uses `jgi_summarize_bam_contig_depths` (from MetaBAT2) to generate a depth table. This table reports how many reads align to each contig in each sample—information that is essential for binning tools, which rely on differential coverage patterns to group contigs into metagenome-assembled genomes (MAGs).
+This rule computes per-contig read depth across all samples associated with a given assembly. 
+It takes the set of BAM files produced by mapping each sample's metagenomic reads back to the assembly 
+and uses `jgi_summarize_bam_contig_depths` (from MetaBAT2) to generate a depth table. This table reports 
+how many reads align to each contig in each sample—information that is essential for binning tools, which 
+rely on differential coverage patterns to group contigs into metagenome-assembled genomes (MAGs).
 
-The rule outputs two versions of the depth file: the full MetaBAT2-compatible depth matrix and a simplified depth file formatted for MaxBin2. These coverage profiles are a key input for downstream binning workflows, as they allow algorithms to distinguish which contigs likely originate from the same genome.
+The rule outputs two versions of the depth file: the full MetaBAT2-compatible depth matrix and a simplified 
+depth file formatted for MaxBin2. These coverage profiles are a key input for downstream binning workflows, 
+as they allow algorithms to distinguish which contigs likely originate from the same genome.
 
 ```{sh eval=FALSE}
 rule assembly_map_depth:
@@ -98,11 +133,19 @@ rule assembly_map_depth:
 
 ## Binning
 
-MetaBAT2, MaxBin2, and SemiBin2 are complementary metagenomic binning tools that take assembled contigs and coverage information and attempt to cluster contigs into metagenome-assembled genomes (MAGs). Because no single algorithm is perfect for all datasets, using multiple binners increases the robustness and completeness of the final genome catalog. Each tool uses different combinations of signals—coverage patterns across samples, sequence composition, and marker-gene information—to infer which contigs originate from the same microbial genome. Running all three methods, then harmonizing the outputs, provides a stronger basis for downstream bin refinement and MAG quality filtering.
+MetaBAT2, MaxBin2, and SemiBin2 are complementary metagenomic binning tools that take assembled contigs 
+and coverage information and attempt to cluster contigs into metagenome-assembled genomes (MAGs). Because 
+no single algorithm is perfect for all datasets, using multiple binners increases the robustness and completeness 
+of the final genome catalog. Each tool uses different combinations of signals—coverage patterns across samples, 
+sequence composition, and marker-gene information—to infer which contigs originate from the same microbial genome. 
+Running all three methods, then harmonizing the outputs, provides a stronger basis for downstream bin refinement 
+and MAG quality filtering.
 
 ### MetaBat2
 
-MetaBAT2 clusters contigs based mainly on differential coverage across samples and tetranucleotide frequency, producing a TSV mapping contigs to bins. It is fast, widely used, and effective when multiple samples provide rich coverage variation.
+MetaBAT2 clusters contigs based mainly on differential coverage across samples and tetranucleotide frequency, 
+producing a TSV mapping contigs to bins. It is fast, widely used, and effective when multiple samples provide 
+rich coverage variation.
 
 ```{sh eval=FALSE}
 rule metabat2:
@@ -119,7 +162,9 @@ rule metabat2:
 
 ### MaxBin2
 
-MaxBin2 uses marker-gene detection, sequence composition, and abundance patterns to group contigs. It tends to perform well for genomes with typical marker sets, and the workflow includes logic to skip running it on very small assemblies where meaningful binning is unlikely.
+MaxBin2 uses marker-gene detection, sequence composition, and abundance patterns to group contigs. It tends to 
+perform well for genomes with typical marker sets, and the workflow includes logic to skip running it on very small 
+assemblies where meaningful binning is unlikely.
 
 ```{sh eval=FALSE}
 rule maxbin2:
@@ -147,7 +192,10 @@ rule maxbin2:
 
 ### SemiBin2
 
-SemiBin2 performs machine-learning–based genome binning using the assembly together with all sample-specific BAM files. It integrates sequence composition, depth information, and neural-network–derived embeddings to cluster contigs into high-quality genome bins. This rule runs SemiBin2 in its “single easy bin” mode, which automates preprocessing steps such as marker gene detection and coverage calculation.
+SemiBin2 performs machine-learning–based genome binning using the assembly together with all sample-specific BAM files. 
+It integrates sequence composition, depth information, and neural-network–derived embeddings to cluster contigs into 
+high-quality genome bins. This rule runs SemiBin2 in its “single easy bin” mode, which automates preprocessing steps 
+such as marker gene detection and coverage calculation.
 
 ```{sh eval=FALSE}
 rule semibin2:
@@ -182,7 +230,8 @@ rule semibin2:
         """
 ```
 
-This rule simply reformats its existing contig_bins.tsv output into a consistent table for integration with the other binners’ results.
+This rule simply reformats its existing contig_bins.tsv output into a consistent table for integration with the 
+other binners' results.
 
 ```{sh eval=FALSE}
 rule semibin2_table:
@@ -200,9 +249,18 @@ rule semibin2_table:
 
 ## Bin refinement
 
-This checkpoint performs bin refinement and quality assessment by combining the results from the three binners (MetaBAT2, MaxBin2, SemiBin2) using binette. It takes each binner’s contig-to-bin TSV plus the original assembly FASTA and feeds only the non-empty TSV files into binette. Binette then reconciles overlapping or conflicting bin assignments across tools, refines bin boundaries, and evaluates the resulting bins’ completeness and contamination (via CheckM2), producing a final table of bins with quality metrics. This step is where the workflow turns three separate binning runs into a unified, curated set of metagenome-assembled genomes.
+This checkpoint performs bin refinement and quality assessment by combining the results from the three binners 
+(MetaBAT2, MaxBin2, SemiBin2) using binette. It takes each binner's contig-to-bin TSV plus the original 
+assembly FASTA and feeds only the non-empty TSV files into binette. Binette then reconciles overlapping or 
+conflicting bin assignments across tools, refines bin boundaries, and evaluates the resulting bins’ completeness 
+and contamination (via CheckM2), producing a final table of bins with quality metrics. This step is where the 
+workflow turns three separate binning runs into a unified, curated set of metagenome-assembled genomes.
 
-The shell logic first checks which of the individual binner outputs actually contain data (for example, small assemblies may have caused some tools to be skipped), builds a list of valid TSV files, and aborts with an error if none are available. If at least one binner produced bins, binette is run with those inputs and the contig FASTA, writing its results into a dedicated output directory and summarizing the final refined bins in final_bins_quality_reports.tsv.
+The shell logic first checks which of the individual binner outputs actually contain data (for example, 
+small assemblies may have caused some tools to be skipped), builds a list of valid TSV files, and aborts with 
+an error if none are available. If at least one binner produced bins, binette is run with those inputs and the 
+contig FASTA, writing its results into a dedicated output directory and summarizing the final refined bins in 
+final_bins_quality_reports.tsv.
 
 ```{sh eval=FALSE}
 checkpoint binette:
@@ -251,9 +309,16 @@ checkpoint binette:
 
 ## Rename bins
 
-This code connects the bin refinement results from Binette to the final, nicely named bin FASTA files that the user will see. The helper function get_bin_fna_sep uses the Binette checkpoint output to (internally) regenerate the list of bin IDs that exist for a given assembly. Conceptually, it tells Snakemake: “for this assembly, there are bins with these IDs, and their sequences live in final_bins/bin_<bin_id>.fa.” That way, the workflow can dynamically adapt to however many bins Binette produced without hard-coding bin names or counts.
+This code connects the bin refinement results from Binette to the final, nicely named bin FASTA files 
+that the user will see. The helper function get_bin_fna_sep uses the Binette checkpoint output to (internally) 
+regenerate the list of bin IDs that exist for a given assembly. Conceptually, it tells Snakemake: “for this 
+assembly, there are bins with these IDs, and their sequences live in final_bins/bin_<bin_id>.fa.” That way,
+the workflow can dynamically adapt to however many bins Binette produced without hard-coding bin names or counts.
 
-The rename_bins rule then takes each of those Binette bin FASTA files and runs a small Python script (rename_bins.py) to copy/rename them into a standardized, final location: final/{assembly}/{assembly}_bin_{bin_id}.fa. This step cleans up Binette’s internal naming scheme and produces consistently named MAG files that are easier to track, share, and feed into downstream analyses such as annotation or taxonomic classification.
+The rename_bins rule then takes each of those Binette bin FASTA files and runs a small Python script (rename_bins.py) 
+to copy/rename them into a standardized, final location: final/{assembly}/{assembly}_bin_{bin_id}.fa. This step cleans 
+up Binette’s internal naming scheme and produces consistently named MAG files that are easier to track, share, and feed 
+into downstream analyses such as annotation or taxonomic classification.
 
 ```{sh eval=FALSE}
 

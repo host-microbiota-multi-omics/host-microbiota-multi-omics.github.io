@@ -2,6 +2,12 @@
 
 # Preprocessing
 
+Data preprocessing is a critical initial step in any host-microbiota multi-omics analysis workflow. 
+This chapter details the Snakemake rules that perform essential preprocessing tasks, including quality 
+filtering of raw sequencing reads, mapping to host reference genomes, and separating host-derived reads 
+from microbial reads. Each rule is designed to ensure high data quality and integrity, setting the stage 
+for accurate downstream analyses such as taxonomic profiling, functional annotation, and integrative multi-omics studies.
+
 ## Quality filtering
 
 This rule performs the first major preprocessing step in the workflow: quality-control, trimming, and filtering of raw paired-end sequencing reads using fastp. It takes each sample’s raw FASTQ files and removes adapters, trims low-quality bases, filters out low-complexity or artifact-rich reads (including common NovaSeq poly-G/X issues), and outputs cleaned read pairs. These cleaned FASTQ files form the high-quality input for all downstream host–microbiota analyses, ensuring that later steps—such as host-read removal, taxonomic profiling, or assembly—are not biased by sequencing artifacts.
