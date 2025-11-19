@@ -2034,7 +2034,15 @@ color: #a52929;
 <li class="chapter" data-level="2.2" data-path="getting-ready.html"><a href="getting-ready.html#create-a-ssh-connection-to-mjolnir"><i class="fa fa-check"></i><b>2.2</b> Create a SSH connection to Mjolnir</a></li>
 <li class="chapter" data-level="2.3" data-path="getting-ready.html"><a href="getting-ready.html#open-the-remote-explorer"><i class="fa fa-check"></i><b>2.3</b> Open the remote explorer</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="command-line-basics.html"><a href="command-line-basics.html"><i class="fa fa-check"></i><b>3</b> Command line basics</a></li>
+<li class="chapter" data-level="3" data-path="command-line-basics.html"><a href="command-line-basics.html"><i class="fa fa-check"></i><b>3</b> Command line basics</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="command-line-basics.html"><a href="command-line-basics.html#navigating-directories"><i class="fa fa-check"></i><b>3.1</b> Navigating Directories</a></li>
+<li class="chapter" data-level="3.2" data-path="command-line-basics.html"><a href="command-line-basics.html#working-with-files-and-directories"><i class="fa fa-check"></i><b>3.2</b> Working With Files and Directories</a></li>
+<li class="chapter" data-level="3.3" data-path="command-line-basics.html"><a href="command-line-basics.html#viewing-file-contents"><i class="fa fa-check"></i><b>3.3</b> Viewing File Contents</a></li>
+<li class="chapter" data-level="3.4" data-path="command-line-basics.html"><a href="command-line-basics.html#file-and-directory-information"><i class="fa fa-check"></i><b>3.4</b> File and Directory Information</a></li>
+<li class="chapter" data-level="3.5" data-path="command-line-basics.html"><a href="command-line-basics.html#searching-for-files-and-text"><i class="fa fa-check"></i><b>3.5</b> Searching for Files and Text</a></li>
+<li class="chapter" data-level="3.6" data-path="command-line-basics.html"><a href="command-line-basics.html#useful-beginner-tips"><i class="fa fa-check"></i><b>3.6</b> Useful Beginner Tips</a></li>
+</ul></li>
 <li class="chapter" data-level="4" data-path="high-performance-computation.html"><a href="high-performance-computation.html"><i class="fa fa-check"></i><b>4</b> High Performance Computation</a>
 <ul>
 <li class="chapter" data-level="4.1" data-path="high-performance-computation.html"><a href="high-performance-computation.html#modules"><i class="fa fa-check"></i><b>4.1</b> Modules</a></li>
@@ -2126,120 +2134,120 @@ for accurate downstream analyses such as taxonomic profiling, functional annotat
 <h2><span class="header-section-number">7.1</span> Quality filtering<a href="preprocessing.html#quality-filtering" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This rule performs the first major preprocessing step in the workflow: quality-control, trimming, and filtering of raw paired-end sequencing reads using fastp. It takes each sample’s raw FASTQ files and removes adapters, trims low-quality bases, filters out low-complexity or artifact-rich reads (including common NovaSeq poly-G/X issues), and outputs cleaned read pairs. These cleaned FASTQ files form the high-quality input for all downstream host–microbiota analyses, ensuring that later steps—such as host-read removal, taxonomic profiling, or assembly—are not biased by sequencing artifacts.</p>
 <p>In addition to generating cleaned reads, the rule produces HTML and JSON quality-control reports summarizing read quality before and after processing. The rule also handles software environment setup through module loading and scales memory/runtime requirements automatically based on the size of the input files, making it robust on HPC systems.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb26-1"><a href="preprocessing.html#cb26-1" tabindex="-1"></a><span class="ex">rule</span> fastp:</span>
-<span id="cb26-2"><a href="preprocessing.html#cb26-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
-<span id="cb26-3"><a href="preprocessing.html#cb26-3" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/reads/{{sample}}_1.fq.gz&quot;</span>,</span>
-<span id="cb26-4"><a href="preprocessing.html#cb26-4" tabindex="-1"></a>        <span class="va">r2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/reads/{{sample}}_2.fq.gz&quot;</span></span>
-<span id="cb26-5"><a href="preprocessing.html#cb26-5" tabindex="-1"></a>    <span class="ex">output:</span></span>
-<span id="cb26-6"><a href="preprocessing.html#cb26-6" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_1.fq.gz&quot;</span>,</span>
-<span id="cb26-7"><a href="preprocessing.html#cb26-7" tabindex="-1"></a>        <span class="va">r2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_2.fq.gz&quot;</span>,</span>
-<span id="cb26-8"><a href="preprocessing.html#cb26-8" tabindex="-1"></a>        <span class="va">html</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}.html&quot;</span>,</span>
-<span id="cb26-9"><a href="preprocessing.html#cb26-9" tabindex="-1"></a>        <span class="va">json</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}.json&quot;</span></span>
-<span id="cb26-10"><a href="preprocessing.html#cb26-10" tabindex="-1"></a>    <span class="ex">shell:</span></span>
-<span id="cb26-11"><a href="preprocessing.html#cb26-11" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb26-12"><a href="preprocessing.html#cb26-12" tabindex="-1"></a><span class="st">        module load {params.fastp_module}</span></span>
-<span id="cb26-13"><a href="preprocessing.html#cb26-13" tabindex="-1"></a><span class="st">        fastp </span><span class="dt">\</span></span>
-<span id="cb26-14"><a href="preprocessing.html#cb26-14" tabindex="-1"></a><span class="st">            --in1 {input.r1} --in2 {input.r2} </span><span class="dt">\</span></span>
-<span id="cb26-15"><a href="preprocessing.html#cb26-15" tabindex="-1"></a><span class="st">            --out1 {output.r1} --out2 {output.r2} </span><span class="dt">\</span></span>
-<span id="cb26-16"><a href="preprocessing.html#cb26-16" tabindex="-1"></a><span class="st">            --trim_poly_g </span><span class="dt">\</span></span>
-<span id="cb26-17"><a href="preprocessing.html#cb26-17" tabindex="-1"></a><span class="st">            --trim_poly_x </span><span class="dt">\</span></span>
-<span id="cb26-18"><a href="preprocessing.html#cb26-18" tabindex="-1"></a><span class="st">            --low_complexity_filter </span><span class="dt">\</span></span>
-<span id="cb26-19"><a href="preprocessing.html#cb26-19" tabindex="-1"></a><span class="st">            --n_base_limit 5 </span><span class="dt">\</span></span>
-<span id="cb26-20"><a href="preprocessing.html#cb26-20" tabindex="-1"></a><span class="st">            --qualified_quality_phred 20 </span><span class="dt">\</span></span>
-<span id="cb26-21"><a href="preprocessing.html#cb26-21" tabindex="-1"></a><span class="st">            --length_required 60 </span><span class="dt">\</span></span>
-<span id="cb26-22"><a href="preprocessing.html#cb26-22" tabindex="-1"></a><span class="st">            --thread {threads} </span><span class="dt">\</span></span>
-<span id="cb26-23"><a href="preprocessing.html#cb26-23" tabindex="-1"></a><span class="st">            --html {output.html} </span><span class="dt">\</span></span>
-<span id="cb26-24"><a href="preprocessing.html#cb26-24" tabindex="-1"></a><span class="st">            --json {output.json} </span><span class="dt">\</span></span>
-<span id="cb26-25"><a href="preprocessing.html#cb26-25" tabindex="-1"></a><span class="st">            --adapter_sequence AGATCGGAAGAGCACACGTCTGAACTCCAGTCA </span><span class="dt">\</span></span>
-<span id="cb26-26"><a href="preprocessing.html#cb26-26" tabindex="-1"></a><span class="st">            --adapter_sequence_r2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT</span></span>
-<span id="cb26-27"><a href="preprocessing.html#cb26-27" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb42-1"><a href="preprocessing.html#cb42-1" tabindex="-1"></a><span class="ex">rule</span> fastp:</span>
+<span id="cb42-2"><a href="preprocessing.html#cb42-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
+<span id="cb42-3"><a href="preprocessing.html#cb42-3" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/reads/{{sample}}_1.fq.gz&quot;</span>,</span>
+<span id="cb42-4"><a href="preprocessing.html#cb42-4" tabindex="-1"></a>        <span class="va">r2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/reads/{{sample}}_2.fq.gz&quot;</span></span>
+<span id="cb42-5"><a href="preprocessing.html#cb42-5" tabindex="-1"></a>    <span class="ex">output:</span></span>
+<span id="cb42-6"><a href="preprocessing.html#cb42-6" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_1.fq.gz&quot;</span>,</span>
+<span id="cb42-7"><a href="preprocessing.html#cb42-7" tabindex="-1"></a>        <span class="va">r2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_2.fq.gz&quot;</span>,</span>
+<span id="cb42-8"><a href="preprocessing.html#cb42-8" tabindex="-1"></a>        <span class="va">html</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}.html&quot;</span>,</span>
+<span id="cb42-9"><a href="preprocessing.html#cb42-9" tabindex="-1"></a>        <span class="va">json</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}.json&quot;</span></span>
+<span id="cb42-10"><a href="preprocessing.html#cb42-10" tabindex="-1"></a>    <span class="ex">shell:</span></span>
+<span id="cb42-11"><a href="preprocessing.html#cb42-11" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb42-12"><a href="preprocessing.html#cb42-12" tabindex="-1"></a><span class="st">        module load {params.fastp_module}</span></span>
+<span id="cb42-13"><a href="preprocessing.html#cb42-13" tabindex="-1"></a><span class="st">        fastp </span><span class="dt">\</span></span>
+<span id="cb42-14"><a href="preprocessing.html#cb42-14" tabindex="-1"></a><span class="st">            --in1 {input.r1} --in2 {input.r2} </span><span class="dt">\</span></span>
+<span id="cb42-15"><a href="preprocessing.html#cb42-15" tabindex="-1"></a><span class="st">            --out1 {output.r1} --out2 {output.r2} </span><span class="dt">\</span></span>
+<span id="cb42-16"><a href="preprocessing.html#cb42-16" tabindex="-1"></a><span class="st">            --trim_poly_g </span><span class="dt">\</span></span>
+<span id="cb42-17"><a href="preprocessing.html#cb42-17" tabindex="-1"></a><span class="st">            --trim_poly_x </span><span class="dt">\</span></span>
+<span id="cb42-18"><a href="preprocessing.html#cb42-18" tabindex="-1"></a><span class="st">            --low_complexity_filter </span><span class="dt">\</span></span>
+<span id="cb42-19"><a href="preprocessing.html#cb42-19" tabindex="-1"></a><span class="st">            --n_base_limit 5 </span><span class="dt">\</span></span>
+<span id="cb42-20"><a href="preprocessing.html#cb42-20" tabindex="-1"></a><span class="st">            --qualified_quality_phred 20 </span><span class="dt">\</span></span>
+<span id="cb42-21"><a href="preprocessing.html#cb42-21" tabindex="-1"></a><span class="st">            --length_required 60 </span><span class="dt">\</span></span>
+<span id="cb42-22"><a href="preprocessing.html#cb42-22" tabindex="-1"></a><span class="st">            --thread {threads} </span><span class="dt">\</span></span>
+<span id="cb42-23"><a href="preprocessing.html#cb42-23" tabindex="-1"></a><span class="st">            --html {output.html} </span><span class="dt">\</span></span>
+<span id="cb42-24"><a href="preprocessing.html#cb42-24" tabindex="-1"></a><span class="st">            --json {output.json} </span><span class="dt">\</span></span>
+<span id="cb42-25"><a href="preprocessing.html#cb42-25" tabindex="-1"></a><span class="st">            --adapter_sequence AGATCGGAAGAGCACACGTCTGAACTCCAGTCA </span><span class="dt">\</span></span>
+<span id="cb42-26"><a href="preprocessing.html#cb42-26" tabindex="-1"></a><span class="st">            --adapter_sequence_r2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT</span></span>
+<span id="cb42-27"><a href="preprocessing.html#cb42-27" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
 </div>
 <div id="host-mapping" class="section level2 hasAnchor" number="7.2">
 <h2><span class="header-section-number">7.2</span> Host mapping<a href="preprocessing.html#host-mapping" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This rule prepares a reference genome so it can be efficiently used for read alignment with Bowtie2. It takes a FASTA file for a given host genome and runs bowtie2-build to generate the index files that Bowtie2 requires for fast and accurate mapping. Only one of the produced index files is listed as the output, but the command generates the full set of Bowtie2 index components. This indexing step is essential because alignment tools rely on these precomputed structures to rapidly search the genome during mapping.</p>
 <p>In addition to building the index, the rule also saves a copy of the reference FASTA alongside the index under a standardized naming scheme, ensuring consistency for downstream processes that expect the reference to be colocated with its index. The rule loads the appropriate Bowtie2 module and includes adaptive memory and runtime estimation based on the size of the reference genome, making it robust for small microbial genomes as well as larger host genomes.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb27-1"><a href="preprocessing.html#cb27-1" tabindex="-1"></a><span class="ex">rule</span> reference_index:</span>
-<span id="cb27-2"><a href="preprocessing.html#cb27-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
-<span id="cb27-3"><a href="preprocessing.html#cb27-3" tabindex="-1"></a>        <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/data/references/{{reference}}.fna&quot;</span></span>
-<span id="cb27-4"><a href="preprocessing.html#cb27-4" tabindex="-1"></a>    <span class="ex">output:</span></span>
-<span id="cb27-5"><a href="preprocessing.html#cb27-5" tabindex="-1"></a>        <span class="va">index</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/references/{{reference}}.rev.1.bt2&quot;</span></span>
-<span id="cb27-6"><a href="preprocessing.html#cb27-6" tabindex="-1"></a>    <span class="ex">params:</span></span>
-<span id="cb27-7"><a href="preprocessing.html#cb27-7" tabindex="-1"></a>        <span class="va">basename</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/references/{{reference}}&quot;</span></span>
-<span id="cb27-8"><a href="preprocessing.html#cb27-8" tabindex="-1"></a>    <span class="ex">shell:</span></span>
-<span id="cb27-9"><a href="preprocessing.html#cb27-9" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb27-10"><a href="preprocessing.html#cb27-10" tabindex="-1"></a><span class="st">        module load {params.bowtie2_module}</span></span>
-<span id="cb27-11"><a href="preprocessing.html#cb27-11" tabindex="-1"></a><span class="st">        bowtie2-build {input} {params.basename}</span></span>
-<span id="cb27-12"><a href="preprocessing.html#cb27-12" tabindex="-1"></a><span class="st">        cat {input} &gt; {params.basename}.fna</span></span>
-<span id="cb27-13"><a href="preprocessing.html#cb27-13" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb43-1"><a href="preprocessing.html#cb43-1" tabindex="-1"></a><span class="ex">rule</span> reference_index:</span>
+<span id="cb43-2"><a href="preprocessing.html#cb43-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
+<span id="cb43-3"><a href="preprocessing.html#cb43-3" tabindex="-1"></a>        <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/data/references/{{reference}}.fna&quot;</span></span>
+<span id="cb43-4"><a href="preprocessing.html#cb43-4" tabindex="-1"></a>    <span class="ex">output:</span></span>
+<span id="cb43-5"><a href="preprocessing.html#cb43-5" tabindex="-1"></a>        <span class="va">index</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/references/{{reference}}.rev.1.bt2&quot;</span></span>
+<span id="cb43-6"><a href="preprocessing.html#cb43-6" tabindex="-1"></a>    <span class="ex">params:</span></span>
+<span id="cb43-7"><a href="preprocessing.html#cb43-7" tabindex="-1"></a>        <span class="va">basename</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/data/references/{{reference}}&quot;</span></span>
+<span id="cb43-8"><a href="preprocessing.html#cb43-8" tabindex="-1"></a>    <span class="ex">shell:</span></span>
+<span id="cb43-9"><a href="preprocessing.html#cb43-9" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb43-10"><a href="preprocessing.html#cb43-10" tabindex="-1"></a><span class="st">        module load {params.bowtie2_module}</span></span>
+<span id="cb43-11"><a href="preprocessing.html#cb43-11" tabindex="-1"></a><span class="st">        bowtie2-build {input} {params.basename}</span></span>
+<span id="cb43-12"><a href="preprocessing.html#cb43-12" tabindex="-1"></a><span class="st">        cat {input} &gt; {params.basename}.fna</span></span>
+<span id="cb43-13"><a href="preprocessing.html#cb43-13" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
 </div>
 <div id="host-genome-mapping" class="section level2 hasAnchor" number="7.3">
 <h2><span class="header-section-number">7.3</span> Host genome mapping<a href="preprocessing.html#host-genome-mapping" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This rule maps each sample’s quality-filtered paired-end reads to its corresponding reference genome using Bowtie2, producing a sorted BAM file that is ready for downstream analyses such as host read removal, quantification, or coverage estimation. It uses the Bowtie2 index generated in the previous step and the cleaned FASTQ files from fastp as inputs. The mapping is performed with multiple threads for efficiency, and the output is streamed directly into samtools to convert the SAM alignment to BAM format and sort it in a single streamlined command.</p>
 <p>By linking each sample to its appropriate reference through SAMPLE_TO_REFERENCE, the rule flexibly supports host–microbiota workflows where different samples may require different reference genomes. Memory and runtime are scaled according to the size of the input reads, ensuring robust performance across varied dataset sizes. The result is a properly formatted, sorted BAM file that downstream tools can use without additional preprocessing.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb28-1"><a href="preprocessing.html#cb28-1" tabindex="-1"></a><span class="ex">rule</span> reference_map:</span>
-<span id="cb28-2"><a href="preprocessing.html#cb28-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
-<span id="cb28-3"><a href="preprocessing.html#cb28-3" tabindex="-1"></a>        <span class="va">index</span><span class="op">=</span>lambda <span class="ex">wildcards:</span> expand<span class="er">(</span></span>
-<span id="cb28-4"><a href="preprocessing.html#cb28-4" tabindex="-1"></a>            <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/data/references/{{reference}}.rev.1.bt2&quot;</span><span class="ex">,</span></span>
-<span id="cb28-5"><a href="preprocessing.html#cb28-5" tabindex="-1"></a>            <span class="va">reference</span><span class="op">=</span>[SAMPLE_TO_REFERENCE<span class="pp">[</span><span class="ss">wildcards.sample</span><span class="pp">]</span>]</span>
-<span id="cb28-6"><a href="preprocessing.html#cb28-6" tabindex="-1"></a>        <span class="kw">)</span><span class="ex">,</span></span>
-<span id="cb28-7"><a href="preprocessing.html#cb28-7" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_1.fq.gz&quot;</span>,</span>
-<span id="cb28-8"><a href="preprocessing.html#cb28-8" tabindex="-1"></a>        <span class="va">r2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_2.fq.gz&quot;</span></span>
-<span id="cb28-9"><a href="preprocessing.html#cb28-9" tabindex="-1"></a>    <span class="ex">output:</span></span>
-<span id="cb28-10"><a href="preprocessing.html#cb28-10" tabindex="-1"></a>        <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/preprocessing/bowtie2/{{sample}}.bam&quot;</span></span>
-<span id="cb28-11"><a href="preprocessing.html#cb28-11" tabindex="-1"></a>    <span class="ex">params:</span></span>
-<span id="cb28-12"><a href="preprocessing.html#cb28-12" tabindex="-1"></a>        <span class="va">basename</span><span class="op">=</span>lambda <span class="ex">wildcards:</span> f<span class="st">&quot;{OUTPUT_DIR}/data/references/{SAMPLE_TO_REFERENCE[wildcards.sample]}&quot;</span></span>
-<span id="cb28-13"><a href="preprocessing.html#cb28-13" tabindex="-1"></a>    <span class="ex">shell:</span></span>
-<span id="cb28-14"><a href="preprocessing.html#cb28-14" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb28-15"><a href="preprocessing.html#cb28-15" tabindex="-1"></a><span class="st">        module load {params.bowtie2_module} {params.samtools_module}</span></span>
-<span id="cb28-16"><a href="preprocessing.html#cb28-16" tabindex="-1"></a><span class="st">        bowtie2 -x {params.basename} -1 {input.r1} -2 {input.r2} -p {threads} | samtools view -bS - | samtools sort -o {output}</span></span>
-<span id="cb28-17"><a href="preprocessing.html#cb28-17" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb44-1"><a href="preprocessing.html#cb44-1" tabindex="-1"></a><span class="ex">rule</span> reference_map:</span>
+<span id="cb44-2"><a href="preprocessing.html#cb44-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
+<span id="cb44-3"><a href="preprocessing.html#cb44-3" tabindex="-1"></a>        <span class="va">index</span><span class="op">=</span>lambda <span class="ex">wildcards:</span> expand<span class="er">(</span></span>
+<span id="cb44-4"><a href="preprocessing.html#cb44-4" tabindex="-1"></a>            <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/data/references/{{reference}}.rev.1.bt2&quot;</span><span class="ex">,</span></span>
+<span id="cb44-5"><a href="preprocessing.html#cb44-5" tabindex="-1"></a>            <span class="va">reference</span><span class="op">=</span>[SAMPLE_TO_REFERENCE<span class="pp">[</span><span class="ss">wildcards.sample</span><span class="pp">]</span>]</span>
+<span id="cb44-6"><a href="preprocessing.html#cb44-6" tabindex="-1"></a>        <span class="kw">)</span><span class="ex">,</span></span>
+<span id="cb44-7"><a href="preprocessing.html#cb44-7" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_1.fq.gz&quot;</span>,</span>
+<span id="cb44-8"><a href="preprocessing.html#cb44-8" tabindex="-1"></a>        <span class="va">r2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/fastp/{{sample}}_2.fq.gz&quot;</span></span>
+<span id="cb44-9"><a href="preprocessing.html#cb44-9" tabindex="-1"></a>    <span class="ex">output:</span></span>
+<span id="cb44-10"><a href="preprocessing.html#cb44-10" tabindex="-1"></a>        <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/preprocessing/bowtie2/{{sample}}.bam&quot;</span></span>
+<span id="cb44-11"><a href="preprocessing.html#cb44-11" tabindex="-1"></a>    <span class="ex">params:</span></span>
+<span id="cb44-12"><a href="preprocessing.html#cb44-12" tabindex="-1"></a>        <span class="va">basename</span><span class="op">=</span>lambda <span class="ex">wildcards:</span> f<span class="st">&quot;{OUTPUT_DIR}/data/references/{SAMPLE_TO_REFERENCE[wildcards.sample]}&quot;</span></span>
+<span id="cb44-13"><a href="preprocessing.html#cb44-13" tabindex="-1"></a>    <span class="ex">shell:</span></span>
+<span id="cb44-14"><a href="preprocessing.html#cb44-14" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb44-15"><a href="preprocessing.html#cb44-15" tabindex="-1"></a><span class="st">        module load {params.bowtie2_module} {params.samtools_module}</span></span>
+<span id="cb44-16"><a href="preprocessing.html#cb44-16" tabindex="-1"></a><span class="st">        bowtie2 -x {params.basename} -1 {input.r1} -2 {input.r2} -p {threads} | samtools view -bS - | samtools sort -o {output}</span></span>
+<span id="cb44-17"><a href="preprocessing.html#cb44-17" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
 </div>
 <div id="mapping-statistics" class="section level2 hasAnchor" number="7.4">
 <h2><span class="header-section-number">7.4</span> Mapping statistics<a href="preprocessing.html#mapping-statistics" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This rule computes alignment quality and summary statistics for each sorted BAM file generated during mapping. Using several samtools subcommands, it produces metrics that describe how well the reads aligned to the reference genome—information essential for evaluating host-read removal efficiency, assessing sequencing quality, and feeding into MultiQC reports. The BAM file is indexed to enable rapid random access, while flagstat, idxstats, and stats each provide different levels of summary: overall alignment rates, per-reference sequence counts, and more detailed alignment metrics.</p>
 <p>All these outputs are written into a dedicated samtools directory and follow a consistent naming structure, making them easy to collect later for QC visualization and downstream processing. The rule loads the necessary samtools module and uses light computational resources, since generating these QC summaries is relatively inexpensive compared to alignment.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb29-1"><a href="preprocessing.html#cb29-1" tabindex="-1"></a><span class="ex">rule</span> samtools_stats:</span>
-<span id="cb29-2"><a href="preprocessing.html#cb29-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
-<span id="cb29-3"><a href="preprocessing.html#cb29-3" tabindex="-1"></a>        <span class="ex">rules.reference_map.output</span></span>
-<span id="cb29-4"><a href="preprocessing.html#cb29-4" tabindex="-1"></a>    <span class="ex">output:</span></span>
-<span id="cb29-5"><a href="preprocessing.html#cb29-5" tabindex="-1"></a>        <span class="ex">bai</span>      = f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.bam.bai&quot;</span>,</span>
-<span id="cb29-6"><a href="preprocessing.html#cb29-6" tabindex="-1"></a>        <span class="ex">flagstat</span> = f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.flagstat.txt&quot;</span>,</span>
-<span id="cb29-7"><a href="preprocessing.html#cb29-7" tabindex="-1"></a>        <span class="ex">idxstats</span> = f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.idxstats.txt&quot;</span>,</span>
-<span id="cb29-8"><a href="preprocessing.html#cb29-8" tabindex="-1"></a>        <span class="ex">stats</span>    = f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.stats.txt&quot;</span></span>
-<span id="cb29-9"><a href="preprocessing.html#cb29-9" tabindex="-1"></a>    <span class="ex">shell:</span></span>
-<span id="cb29-10"><a href="preprocessing.html#cb29-10" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb29-11"><a href="preprocessing.html#cb29-11" tabindex="-1"></a><span class="st">        module load {params.samtools_module}</span></span>
-<span id="cb29-12"><a href="preprocessing.html#cb29-12" tabindex="-1"></a><span class="st">        samtools index {input} {output.bai}</span></span>
-<span id="cb29-13"><a href="preprocessing.html#cb29-13" tabindex="-1"></a><span class="st">        samtools flagstat {input} &gt; {output.flagstat}</span></span>
-<span id="cb29-14"><a href="preprocessing.html#cb29-14" tabindex="-1"></a><span class="st">        samtools idxstats {input} &gt; {output.idxstats}</span></span>
-<span id="cb29-15"><a href="preprocessing.html#cb29-15" tabindex="-1"></a><span class="st">        samtools stats {input} &gt; {output.stats}</span></span>
-<span id="cb29-16"><a href="preprocessing.html#cb29-16" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb45-1"><a href="preprocessing.html#cb45-1" tabindex="-1"></a><span class="ex">rule</span> samtools_stats:</span>
+<span id="cb45-2"><a href="preprocessing.html#cb45-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
+<span id="cb45-3"><a href="preprocessing.html#cb45-3" tabindex="-1"></a>        <span class="ex">rules.reference_map.output</span></span>
+<span id="cb45-4"><a href="preprocessing.html#cb45-4" tabindex="-1"></a>    <span class="ex">output:</span></span>
+<span id="cb45-5"><a href="preprocessing.html#cb45-5" tabindex="-1"></a>        <span class="ex">bai</span>      = f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.bam.bai&quot;</span>,</span>
+<span id="cb45-6"><a href="preprocessing.html#cb45-6" tabindex="-1"></a>        <span class="ex">flagstat</span> = f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.flagstat.txt&quot;</span>,</span>
+<span id="cb45-7"><a href="preprocessing.html#cb45-7" tabindex="-1"></a>        <span class="ex">idxstats</span> = f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.idxstats.txt&quot;</span>,</span>
+<span id="cb45-8"><a href="preprocessing.html#cb45-8" tabindex="-1"></a>        <span class="ex">stats</span>    = f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/samtools/{{sample}}.stats.txt&quot;</span></span>
+<span id="cb45-9"><a href="preprocessing.html#cb45-9" tabindex="-1"></a>    <span class="ex">shell:</span></span>
+<span id="cb45-10"><a href="preprocessing.html#cb45-10" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb45-11"><a href="preprocessing.html#cb45-11" tabindex="-1"></a><span class="st">        module load {params.samtools_module}</span></span>
+<span id="cb45-12"><a href="preprocessing.html#cb45-12" tabindex="-1"></a><span class="st">        samtools index {input} {output.bai}</span></span>
+<span id="cb45-13"><a href="preprocessing.html#cb45-13" tabindex="-1"></a><span class="st">        samtools flagstat {input} &gt; {output.flagstat}</span></span>
+<span id="cb45-14"><a href="preprocessing.html#cb45-14" tabindex="-1"></a><span class="st">        samtools idxstats {input} &gt; {output.idxstats}</span></span>
+<span id="cb45-15"><a href="preprocessing.html#cb45-15" tabindex="-1"></a><span class="st">        samtools stats {input} &gt; {output.stats}</span></span>
+<span id="cb45-16"><a href="preprocessing.html#cb45-16" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
 </div>
 <div id="host-microbiota-split" class="section level2 hasAnchor" number="7.5">
 <h2><span class="header-section-number">7.5</span> Host-microbiota split<a href="preprocessing.html#host-microbiota-split" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This rule takes the aligned BAM file and separates mapped and unmapped read pairs, effectively splitting host-origin reads from metagenomic reads. Unmapped reads (i.e., those that did not align to the host reference) are extracted and converted back into paired FASTQ files, forming the metagenomic read set used for downstream microbiome profiling or assembly. At the same time, mapped reads are retained in a host-only BAM file, which can be used for host genomics analyses or simply for quality assessment.</p>
 <p>In addition to generating the split read files, the rule also counts how many reads and how many total bases fall into the metagenomic vs. host categories. These summary files are useful for evaluating host contamination, sequencing depth distribution, and the overall success of the host-depletion strategy. The process relies on samtools to filter BAM records by mapping flags and uses simple awk commands to tally base counts, making it a compact but crucial step in workflows that jointly analyze host and microbiota data.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb30-1"><a href="preprocessing.html#cb30-1" tabindex="-1"></a><span class="ex">rule</span> split_reads:</span>
-<span id="cb30-2"><a href="preprocessing.html#cb30-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
-<span id="cb30-3"><a href="preprocessing.html#cb30-3" tabindex="-1"></a>        <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/preprocessing/bowtie2/{{sample}}.bam&quot;</span></span>
-<span id="cb30-4"><a href="preprocessing.html#cb30-4" tabindex="-1"></a>    <span class="ex">output:</span></span>
-<span id="cb30-5"><a href="preprocessing.html#cb30-5" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}_1.fq.gz&quot;</span>,</span>
-<span id="cb30-6"><a href="preprocessing.html#cb30-6" tabindex="-1"></a>        <span class="va">r2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}_2.fq.gz&quot;</span>,</span>
-<span id="cb30-7"><a href="preprocessing.html#cb30-7" tabindex="-1"></a>        <span class="va">metareads</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.metareads&quot;</span>,</span>
-<span id="cb30-8"><a href="preprocessing.html#cb30-8" tabindex="-1"></a>        <span class="va">metabases</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.metabases&quot;</span>,</span>
-<span id="cb30-9"><a href="preprocessing.html#cb30-9" tabindex="-1"></a>        <span class="va">bam</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.bam&quot;</span>,</span>
-<span id="cb30-10"><a href="preprocessing.html#cb30-10" tabindex="-1"></a>        <span class="va">hostreads</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.hostreads&quot;</span>,</span>
-<span id="cb30-11"><a href="preprocessing.html#cb30-11" tabindex="-1"></a>        <span class="va">hostbases</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.hostbases&quot;</span></span>
-<span id="cb30-12"><a href="preprocessing.html#cb30-12" tabindex="-1"></a>    <span class="ex">shell:</span></span>
-<span id="cb30-13"><a href="preprocessing.html#cb30-13" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb30-14"><a href="preprocessing.html#cb30-14" tabindex="-1"></a><span class="st">        module load {params.bowtie2_module} {params.samtools_module}</span></span>
-<span id="cb30-15"><a href="preprocessing.html#cb30-15" tabindex="-1"></a><span class="st">        samtools view -b -f12 -@ {threads} {input} | samtools fastq -@ {threads} -1 {output.r1} -2 {output.r2} -</span></span>
-<span id="cb30-16"><a href="preprocessing.html#cb30-16" tabindex="-1"></a><span class="st">        samtools view -b -f12 -@ {threads} {input} | samtools view -c - &gt; {output.metareads}</span></span>
-<span id="cb30-17"><a href="preprocessing.html#cb30-17" tabindex="-1"></a><span class="st">        samtools view -f12 -@ {threads} {input} | awk &#39;{{sum += length(</span><span class="va">$1</span><span class="st">0)}} END {{print sum}}&#39; &gt; {output.metabases}</span></span>
-<span id="cb30-18"><a href="preprocessing.html#cb30-18" tabindex="-1"></a><span class="st">        samtools view -b -F12 -@ {threads} {input} | samtools sort -@ {threads} -o {output.bam} -</span></span>
-<span id="cb30-19"><a href="preprocessing.html#cb30-19" tabindex="-1"></a><span class="st">        samtools view -b -F12 -@ {threads} {input} | samtools view -c - &gt; {output.hostreads}</span></span>
-<span id="cb30-20"><a href="preprocessing.html#cb30-20" tabindex="-1"></a><span class="st">        samtools view -F12 -@ {threads} {input} | awk &#39;{{sum += length(</span><span class="va">$1</span><span class="st">0)}} END {{print sum}}&#39; &gt; {output.hostbases}</span></span>
-<span id="cb30-21"><a href="preprocessing.html#cb30-21" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb46-1"><a href="preprocessing.html#cb46-1" tabindex="-1"></a><span class="ex">rule</span> split_reads:</span>
+<span id="cb46-2"><a href="preprocessing.html#cb46-2" tabindex="-1"></a>    <span class="ex">input:</span></span>
+<span id="cb46-3"><a href="preprocessing.html#cb46-3" tabindex="-1"></a>        <span class="ex">f</span><span class="st">&quot;{OUTPUT_DIR}/preprocessing/bowtie2/{{sample}}.bam&quot;</span></span>
+<span id="cb46-4"><a href="preprocessing.html#cb46-4" tabindex="-1"></a>    <span class="ex">output:</span></span>
+<span id="cb46-5"><a href="preprocessing.html#cb46-5" tabindex="-1"></a>        <span class="va">r1</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}_1.fq.gz&quot;</span>,</span>
+<span id="cb46-6"><a href="preprocessing.html#cb46-6" tabindex="-1"></a>        <span class="va">r2</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}_2.fq.gz&quot;</span>,</span>
+<span id="cb46-7"><a href="preprocessing.html#cb46-7" tabindex="-1"></a>        <span class="va">metareads</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.metareads&quot;</span>,</span>
+<span id="cb46-8"><a href="preprocessing.html#cb46-8" tabindex="-1"></a>        <span class="va">metabases</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.metabases&quot;</span>,</span>
+<span id="cb46-9"><a href="preprocessing.html#cb46-9" tabindex="-1"></a>        <span class="va">bam</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.bam&quot;</span>,</span>
+<span id="cb46-10"><a href="preprocessing.html#cb46-10" tabindex="-1"></a>        <span class="va">hostreads</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.hostreads&quot;</span>,</span>
+<span id="cb46-11"><a href="preprocessing.html#cb46-11" tabindex="-1"></a>        <span class="va">hostbases</span><span class="op">=</span>f<span class="st">&quot;{OUTPUT_DIR}/preprocessing/final/{{sample}}.hostbases&quot;</span></span>
+<span id="cb46-12"><a href="preprocessing.html#cb46-12" tabindex="-1"></a>    <span class="ex">shell:</span></span>
+<span id="cb46-13"><a href="preprocessing.html#cb46-13" tabindex="-1"></a>        <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb46-14"><a href="preprocessing.html#cb46-14" tabindex="-1"></a><span class="st">        module load {params.bowtie2_module} {params.samtools_module}</span></span>
+<span id="cb46-15"><a href="preprocessing.html#cb46-15" tabindex="-1"></a><span class="st">        samtools view -b -f12 -@ {threads} {input} | samtools fastq -@ {threads} -1 {output.r1} -2 {output.r2} -</span></span>
+<span id="cb46-16"><a href="preprocessing.html#cb46-16" tabindex="-1"></a><span class="st">        samtools view -b -f12 -@ {threads} {input} | samtools view -c - &gt; {output.metareads}</span></span>
+<span id="cb46-17"><a href="preprocessing.html#cb46-17" tabindex="-1"></a><span class="st">        samtools view -f12 -@ {threads} {input} | awk &#39;{{sum += length(</span><span class="va">$1</span><span class="st">0)}} END {{print sum}}&#39; &gt; {output.metabases}</span></span>
+<span id="cb46-18"><a href="preprocessing.html#cb46-18" tabindex="-1"></a><span class="st">        samtools view -b -F12 -@ {threads} {input} | samtools sort -@ {threads} -o {output.bam} -</span></span>
+<span id="cb46-19"><a href="preprocessing.html#cb46-19" tabindex="-1"></a><span class="st">        samtools view -b -F12 -@ {threads} {input} | samtools view -c - &gt; {output.hostreads}</span></span>
+<span id="cb46-20"><a href="preprocessing.html#cb46-20" tabindex="-1"></a><span class="st">        samtools view -F12 -@ {threads} {input} | awk &#39;{{sum += length(</span><span class="va">$1</span><span class="st">0)}} END {{print sum}}&#39; &gt; {output.hostbases}</span></span>
+<span id="cb46-21"><a href="preprocessing.html#cb46-21" tabindex="-1"></a><span class="st">        &quot;&quot;&quot;</span></span></code></pre></div>
 
 </div>
 </div>

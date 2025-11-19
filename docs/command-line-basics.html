@@ -2034,7 +2034,15 @@ color: #a52929;
 <li class="chapter" data-level="2.2" data-path="getting-ready.html"><a href="getting-ready.html#create-a-ssh-connection-to-mjolnir"><i class="fa fa-check"></i><b>2.2</b> Create a SSH connection to Mjolnir</a></li>
 <li class="chapter" data-level="2.3" data-path="getting-ready.html"><a href="getting-ready.html#open-the-remote-explorer"><i class="fa fa-check"></i><b>2.3</b> Open the remote explorer</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="command-line-basics.html"><a href="command-line-basics.html"><i class="fa fa-check"></i><b>3</b> Command line basics</a></li>
+<li class="chapter" data-level="3" data-path="command-line-basics.html"><a href="command-line-basics.html"><i class="fa fa-check"></i><b>3</b> Command line basics</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="command-line-basics.html"><a href="command-line-basics.html#navigating-directories"><i class="fa fa-check"></i><b>3.1</b> Navigating Directories</a></li>
+<li class="chapter" data-level="3.2" data-path="command-line-basics.html"><a href="command-line-basics.html#working-with-files-and-directories"><i class="fa fa-check"></i><b>3.2</b> Working With Files and Directories</a></li>
+<li class="chapter" data-level="3.3" data-path="command-line-basics.html"><a href="command-line-basics.html#viewing-file-contents"><i class="fa fa-check"></i><b>3.3</b> Viewing File Contents</a></li>
+<li class="chapter" data-level="3.4" data-path="command-line-basics.html"><a href="command-line-basics.html#file-and-directory-information"><i class="fa fa-check"></i><b>3.4</b> File and Directory Information</a></li>
+<li class="chapter" data-level="3.5" data-path="command-line-basics.html"><a href="command-line-basics.html#searching-for-files-and-text"><i class="fa fa-check"></i><b>3.5</b> Searching for Files and Text</a></li>
+<li class="chapter" data-level="3.6" data-path="command-line-basics.html"><a href="command-line-basics.html#useful-beginner-tips"><i class="fa fa-check"></i><b>3.6</b> Useful Beginner Tips</a></li>
+</ul></li>
 <li class="chapter" data-level="4" data-path="high-performance-computation.html"><a href="high-performance-computation.html"><i class="fa fa-check"></i><b>4</b> High Performance Computation</a>
 <ul>
 <li class="chapter" data-level="4.1" data-path="high-performance-computation.html"><a href="high-performance-computation.html#modules"><i class="fa fa-check"></i><b>4.1</b> Modules</a></li>
@@ -2120,31 +2128,125 @@ color: #a52929;
 <p>Before diving into high-performance computing and Snakemake, it’s essential to understand some command-line basics.
 The command line, also known as the terminal or shell, is a text-based interface that allows users to interact with their
 computer’s operating system. Here are some fundamental commands and concepts to get you started:</p>
+<div id="navigating-directories" class="section level2 hasAnchor" number="3.1">
+<h2><span class="header-section-number">3.1</span> Navigating Directories<a href="command-line-basics.html#navigating-directories" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Moving around the filesystem efficiently is the first step to feeling comfortable at the command line.
+The commands below help you check where you are, list what’s around you, and jump to the folder you need.</p>
 <ul>
-<li><strong>Navigating directories:</strong>
+<li><p><strong><code>pwd</code></strong> — <em>Print Working Directory</em><br />
+Shows your current location in the filesystem.<br />
+<strong>Example:</strong></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="command-line-basics.html#cb1-1" tabindex="-1"></a><span class="ex">$</span> pwd</span>
+<span id="cb1-2"><a href="command-line-basics.html#cb1-2" tabindex="-1"></a><span class="ex">/home/user/projects</span></span></code></pre></div></li>
+<li><p><strong><code>ls</code></strong> — List files and directories<br />
+Useful options:</p>
 <ul>
-<li><code>pwd</code>: Print the current working directory.</li>
-<li><code>ls</code>: List files and directories in the current directory.</li>
-<li><code>cd &lt;directory&gt;</code>: Change to a specified directory.</li>
-</ul></li>
-<li><strong>File operations:</strong>
-<ul>
-<li><code>cp &lt;source&gt; &lt;destination&gt;</code>: Copy files or directories.</li>
-<li><code>mv &lt;source&gt; &lt;destination&gt;</code>: Move or rename files or directories.</li>
-<li><code>rm &lt;file&gt;</code>: Remove files.</li>
-<li><code>mkdir &lt;directory&gt;</code>: Create a new directory.</li>
-</ul></li>
-<li><strong>Viewing file contents:</strong>
-<ul>
-<li><code>cat &lt;file&gt;</code>: Display the contents of a file.</li>
-<li><code>less &lt;file&gt;</code>: View file contents one page at a time.</li>
-</ul></li>
-<li><strong>Getting help:</strong>
-<ul>
-<li><code>man &lt;command&gt;</code>: Display the manual for a command.</li>
-<li><code>&lt;command&gt; --help</code>: Show help information for a command.</li>
-</ul></li>
+<li><code>ls -l</code> — long format (permissions, sizes, timestamps)<br />
+</li>
+<li><code>ls -a</code> — show hidden files<br />
+<strong>Example:</strong><br />
+</li>
 </ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="command-line-basics.html#cb2-1" tabindex="-1"></a><span class="ex">$</span> ls <span class="at">-la</span></span>
+<span id="cb2-2"><a href="command-line-basics.html#cb2-2" tabindex="-1"></a><span class="ex">drwxr-xr-x</span>  5 user user  4096 Feb 10 project1</span>
+<span id="cb2-3"><a href="command-line-basics.html#cb2-3" tabindex="-1"></a><span class="ex">-rw-r--r--</span>  1 user user   512 Feb 10 notes.txt</span></code></pre></div></li>
+<li><p><strong><code>cd &lt;directory&gt;</code></strong> — Change directory<br />
+<strong>Examples:</strong></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="command-line-basics.html#cb3-1" tabindex="-1"></a><span class="bu">cd</span> project1</span>
+<span id="cb3-2"><a href="command-line-basics.html#cb3-2" tabindex="-1"></a><span class="bu">cd</span> ..        <span class="co"># go up one level</span></span>
+<span id="cb3-3"><a href="command-line-basics.html#cb3-3" tabindex="-1"></a><span class="bu">cd</span> ~         <span class="co"># go to home directory</span></span>
+<span id="cb3-4"><a href="command-line-basics.html#cb3-4" tabindex="-1"></a><span class="bu">cd</span> /path/to/folder</span></code></pre></div></li>
+</ul>
+</div>
+<div id="working-with-files-and-directories" class="section level2 hasAnchor" number="3.2">
+<h2><span class="header-section-number">3.2</span> Working With Files and Directories<a href="command-line-basics.html#working-with-files-and-directories" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Once you can move around, you’ll want to organize what you find. These commands cover copying,
+moving, deleting, and creating files and folders so you can keep your workspace tidy.</p>
+<ul>
+<li><p><strong><code>cp &lt;source&gt; &lt;destination&gt;</code></strong> — Copy files or folders<br />
+Add <code>-r</code> to copy directories recursively.<br />
+<strong>Examples:</strong></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="command-line-basics.html#cb4-1" tabindex="-1"></a><span class="fu">cp</span> file.txt backup.txt</span>
+<span id="cb4-2"><a href="command-line-basics.html#cb4-2" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> data/ backup_data/</span></code></pre></div></li>
+<li><p><strong><code>mv &lt;source&gt; &lt;destination&gt;</code></strong> — Move or rename files<br />
+<strong>Examples:</strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="command-line-basics.html#cb5-1" tabindex="-1"></a><span class="fu">mv</span> old_name.txt new_name.txt</span>
+<span id="cb5-2"><a href="command-line-basics.html#cb5-2" tabindex="-1"></a><span class="fu">mv</span> file.txt /home/user/documents/</span></code></pre></div></li>
+<li><p><strong><code>rm &lt;file&gt;</code></strong> — Remove files<br />
+⚠️ <em>Removal is permanent — use with caution.</em><br />
+Add <code>-r</code> to remove directories.<br />
+<strong>Examples:</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="command-line-basics.html#cb6-1" tabindex="-1"></a><span class="fu">rm</span> old_file.txt</span>
+<span id="cb6-2"><a href="command-line-basics.html#cb6-2" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-r</span> old_folder/</span></code></pre></div></li>
+<li><p><strong><code>mkdir &lt;directory&gt;</code></strong> — Create new directories<br />
+<strong>Examples:</strong></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="command-line-basics.html#cb7-1" tabindex="-1"></a><span class="fu">mkdir</span> results</span>
+<span id="cb7-2"><a href="command-line-basics.html#cb7-2" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> path/to/new/folder   <span class="co"># creates nested folders</span></span></code></pre></div></li>
+</ul>
+</div>
+<div id="viewing-file-contents" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> Viewing File Contents<a href="command-line-basics.html#viewing-file-contents" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>When you just need to inspect or skim a file, these options let you read it right from the
+terminal without opening an editor.</p>
+<ul>
+<li><p><strong><code>cat &lt;file&gt;</code></strong> — Print entire file</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="command-line-basics.html#cb8-1" tabindex="-1"></a><span class="fu">cat</span> sample.txt</span></code></pre></div></li>
+<li><p><strong><code>less &lt;file&gt;</code></strong> — View large files page-by-page<br />
+Useful shortcuts:</p>
+<ul>
+<li><code>q</code> — quit<br />
+</li>
+<li><code>↑/↓</code> — scroll<br />
+</li>
+<li><code>/word</code> — search<br />
+</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="command-line-basics.html#cb9-1" tabindex="-1"></a><span class="fu">less</span> longfile.log</span></code></pre></div></li>
+<li><p><strong><code>head &lt;file&gt;</code></strong> — Show the first 10 lines</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="command-line-basics.html#cb10-1" tabindex="-1"></a><span class="fu">head</span> data.txt</span></code></pre></div></li>
+<li><p><strong><code>tail &lt;file&gt;</code></strong> — Show the last 10 lines</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="command-line-basics.html#cb11-1" tabindex="-1"></a><span class="fu">tail</span> data.txt</span>
+<span id="cb11-2"><a href="command-line-basics.html#cb11-2" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-f</span> logfile.log  <span class="co"># follow live updates</span></span></code></pre></div></li>
+</ul>
+</div>
+<div id="file-and-directory-information" class="section level2 hasAnchor" number="3.4">
+<h2><span class="header-section-number">3.4</span> File and Directory Information<a href="command-line-basics.html#file-and-directory-information" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Disk quotas matter on shared systems. Use these commands to see how much space your files use
+and how much is left on the system.</p>
+<ul>
+<li><p><strong><code>du</code></strong> — Disk usage summary</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="command-line-basics.html#cb12-1" tabindex="-1"></a><span class="fu">du</span> <span class="at">-sh</span> folder/</span></code></pre></div></li>
+<li><p><strong><code>df -h</code></strong> — Show available disk space</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="command-line-basics.html#cb13-1" tabindex="-1"></a><span class="fu">df</span> <span class="at">-h</span></span></code></pre></div></li>
+</ul>
+</div>
+<div id="searching-for-files-and-text" class="section level2 hasAnchor" number="3.5">
+<h2><span class="header-section-number">3.5</span> Searching for Files and Text<a href="command-line-basics.html#searching-for-files-and-text" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Finding the right file or line quickly saves time. These tools search filenames and file contents
+directly from the command line.</p>
+<ul>
+<li><p><strong><code>grep &lt;pattern&gt; &lt;file&gt;</code></strong> — Search text in files</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="command-line-basics.html#cb14-1" tabindex="-1"></a><span class="fu">grep</span> <span class="st">&quot;ERROR&quot;</span> logfile.log</span>
+<span id="cb14-2"><a href="command-line-basics.html#cb14-2" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-i</span> <span class="st">&quot;gene&quot;</span> annotations.txt    <span class="co"># case-insensitive</span></span>
+<span id="cb14-3"><a href="command-line-basics.html#cb14-3" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-r</span> <span class="st">&quot;pattern&quot;</span> ./data          <span class="co"># search recursively</span></span></code></pre></div></li>
+<li><p><strong><code>find &lt;path&gt; -name &lt;pattern&gt;</code></strong> — Search for files</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="command-line-basics.html#cb15-1" tabindex="-1"></a><span class="fu">find</span> . <span class="at">-name</span> <span class="st">&quot;*.txt&quot;</span></span></code></pre></div></li>
+</ul>
+</div>
+<div id="useful-beginner-tips" class="section level2 hasAnchor" number="3.6">
+<h2><span class="header-section-number">3.6</span> Useful Beginner Tips<a href="command-line-basics.html#useful-beginner-tips" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A few small habits make terminal work faster and less error-prone. Try these shortcuts and helpers as you practice.</p>
+<ul>
+<li><p>Press <strong>Tab</strong> to autocomplete commands and filenames.<br />
+</p></li>
+<li><p>Use <strong>↑/↓</strong> to browse command history.<br />
+</p></li>
+<li><p>Run <code>history</code> to see past commands.<br />
+</p></li>
+<li><p>Add comments in the terminal with <code>#</code>:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="command-line-basics.html#cb16-1" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-la</span>  <span class="co"># list files in detail including hidden ones</span></span></code></pre></div></li>
+</ul>
+</div>
 </div>
             </section>
 

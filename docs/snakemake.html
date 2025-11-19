@@ -2034,7 +2034,15 @@ color: #a52929;
 <li class="chapter" data-level="2.2" data-path="getting-ready.html"><a href="getting-ready.html#create-a-ssh-connection-to-mjolnir"><i class="fa fa-check"></i><b>2.2</b> Create a SSH connection to Mjolnir</a></li>
 <li class="chapter" data-level="2.3" data-path="getting-ready.html"><a href="getting-ready.html#open-the-remote-explorer"><i class="fa fa-check"></i><b>2.3</b> Open the remote explorer</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="command-line-basics.html"><a href="command-line-basics.html"><i class="fa fa-check"></i><b>3</b> Command line basics</a></li>
+<li class="chapter" data-level="3" data-path="command-line-basics.html"><a href="command-line-basics.html"><i class="fa fa-check"></i><b>3</b> Command line basics</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="command-line-basics.html"><a href="command-line-basics.html#navigating-directories"><i class="fa fa-check"></i><b>3.1</b> Navigating Directories</a></li>
+<li class="chapter" data-level="3.2" data-path="command-line-basics.html"><a href="command-line-basics.html#working-with-files-and-directories"><i class="fa fa-check"></i><b>3.2</b> Working With Files and Directories</a></li>
+<li class="chapter" data-level="3.3" data-path="command-line-basics.html"><a href="command-line-basics.html#viewing-file-contents"><i class="fa fa-check"></i><b>3.3</b> Viewing File Contents</a></li>
+<li class="chapter" data-level="3.4" data-path="command-line-basics.html"><a href="command-line-basics.html#file-and-directory-information"><i class="fa fa-check"></i><b>3.4</b> File and Directory Information</a></li>
+<li class="chapter" data-level="3.5" data-path="command-line-basics.html"><a href="command-line-basics.html#searching-for-files-and-text"><i class="fa fa-check"></i><b>3.5</b> Searching for Files and Text</a></li>
+<li class="chapter" data-level="3.6" data-path="command-line-basics.html"><a href="command-line-basics.html#useful-beginner-tips"><i class="fa fa-check"></i><b>3.6</b> Useful Beginner Tips</a></li>
+</ul></li>
 <li class="chapter" data-level="4" data-path="high-performance-computation.html"><a href="high-performance-computation.html"><i class="fa fa-check"></i><b>4</b> High Performance Computation</a>
 <ul>
 <li class="chapter" data-level="4.1" data-path="high-performance-computation.html"><a href="high-performance-computation.html#modules"><i class="fa fa-check"></i><b>4.1</b> Modules</a></li>
@@ -2144,14 +2152,14 @@ Snakemake is particularly popular in bioinformatics and computational biology, w
 <div id="the-all-rule" class="section level3 hasAnchor" number="5.2.1">
 <h3><span class="header-section-number">5.2.1</span> The ALL rule<a href="snakemake.html#the-all-rule" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>You typically start by specifying what you ultimately want to produce (plots, tables, reports) in the <code>all</code> rule:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb11-1"><a href="snakemake.html#cb11-1" tabindex="-1"></a><span class="ex">rule</span> all:</span>
-<span id="cb11-2"><a href="snakemake.html#cb11-2" tabindex="-1"></a>  <span class="ex">input:</span> </span>
-<span id="cb11-3"><a href="snakemake.html#cb11-3" tabindex="-1"></a>    <span class="st">&quot;results/plot.png&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb27-1"><a href="snakemake.html#cb27-1" tabindex="-1"></a><span class="ex">rule</span> all:</span>
+<span id="cb27-2"><a href="snakemake.html#cb27-2" tabindex="-1"></a>  <span class="ex">input:</span> </span>
+<span id="cb27-3"><a href="snakemake.html#cb27-3" tabindex="-1"></a>    <span class="st">&quot;results/plot.png&quot;</span></span></code></pre></div>
 <p>In this example, the pipeline will yield a <code>plot.png</code> file in the <code>results</code> directory. But you can also define multiple final outputs:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb12-1"><a href="snakemake.html#cb12-1" tabindex="-1"></a><span class="ex">rule</span> all:</span>
-<span id="cb12-2"><a href="snakemake.html#cb12-2" tabindex="-1"></a>  <span class="ex">input:</span> </span>
-<span id="cb12-3"><a href="snakemake.html#cb12-3" tabindex="-1"></a>    <span class="st">&quot;results/plot.png&quot;</span><span class="ex">,</span></span>
-<span id="cb12-4"><a href="snakemake.html#cb12-4" tabindex="-1"></a>    <span class="st">&quot;results/stats.tsv&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb28-1"><a href="snakemake.html#cb28-1" tabindex="-1"></a><span class="ex">rule</span> all:</span>
+<span id="cb28-2"><a href="snakemake.html#cb28-2" tabindex="-1"></a>  <span class="ex">input:</span> </span>
+<span id="cb28-3"><a href="snakemake.html#cb28-3" tabindex="-1"></a>    <span class="st">&quot;results/plot.png&quot;</span><span class="ex">,</span></span>
+<span id="cb28-4"><a href="snakemake.html#cb28-4" tabindex="-1"></a>    <span class="st">&quot;results/stats.tsv&quot;</span></span></code></pre></div>
 </div>
 <div id="a-regular-rule" class="section level3 hasAnchor" number="5.2.2">
 <h3><span class="header-section-number">5.2.2</span> A regular rule<a href="snakemake.html#a-regular-rule" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -2163,13 +2171,13 @@ Snakemake is particularly popular in bioinformatics and computational biology, w
 <li><strong>Command:</strong> the command or script that performs the transformation.</li>
 </ul>
 <p>This rule, for example, outputs the row counts of a file to another file:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb13-1"><a href="snakemake.html#cb13-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
-<span id="cb13-2"><a href="snakemake.html#cb13-2" tabindex="-1"></a>  <span class="ex">input:</span></span>
-<span id="cb13-3"><a href="snakemake.html#cb13-3" tabindex="-1"></a>    <span class="st">&quot;data/sample1.txt&quot;</span></span>
-<span id="cb13-4"><a href="snakemake.html#cb13-4" tabindex="-1"></a>  <span class="ex">output:</span></span>
-<span id="cb13-5"><a href="snakemake.html#cb13-5" tabindex="-1"></a>    <span class="st">&quot;results/sample1.txt&quot;</span></span>
-<span id="cb13-6"><a href="snakemake.html#cb13-6" tabindex="-1"></a>  <span class="ex">shell:</span></span>
-<span id="cb13-7"><a href="snakemake.html#cb13-7" tabindex="-1"></a>    <span class="st">&quot;wc -l {input} | awk &#39;{{print </span><span class="va">$1</span><span class="st">}}&#39; &gt; {output}&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb29-1"><a href="snakemake.html#cb29-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
+<span id="cb29-2"><a href="snakemake.html#cb29-2" tabindex="-1"></a>  <span class="ex">input:</span></span>
+<span id="cb29-3"><a href="snakemake.html#cb29-3" tabindex="-1"></a>    <span class="st">&quot;data/sample1.txt&quot;</span></span>
+<span id="cb29-4"><a href="snakemake.html#cb29-4" tabindex="-1"></a>  <span class="ex">output:</span></span>
+<span id="cb29-5"><a href="snakemake.html#cb29-5" tabindex="-1"></a>    <span class="st">&quot;results/sample1.txt&quot;</span></span>
+<span id="cb29-6"><a href="snakemake.html#cb29-6" tabindex="-1"></a>  <span class="ex">shell:</span></span>
+<span id="cb29-7"><a href="snakemake.html#cb29-7" tabindex="-1"></a>    <span class="st">&quot;wc -l {input} | awk &#39;{{print </span><span class="va">$1</span><span class="st">}}&#39; &gt; {output}&quot;</span></span></code></pre></div>
 <div id="name" class="section level4 hasAnchor" number="5.2.2.1">
 <h4><span class="header-section-number">5.2.2.1</span> Name<a href="snakemake.html#name" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>It must be unique, and ideally informative, as it will be used to identify the rules in the overview files, logs, etc. If you use repeated names, snakemake will complain and stop working.</p>
@@ -2179,40 +2187,40 @@ Snakemake is particularly popular in bioinformatics and computational biology, w
 <p>Snakemake lets you describe input and output files in several convenient ways.</p>
 <div id="single-file" class="section level5 hasAnchor" number="5.2.2.2.1">
 <h5><span class="header-section-number">5.2.2.2.1</span> Single file<a href="snakemake.html#single-file" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<div class="sourceCode" id="cb14"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb14-1"><a href="snakemake.html#cb14-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
-<span id="cb14-2"><a href="snakemake.html#cb14-2" tabindex="-1"></a>  <span class="ex">input:</span> <span class="st">&quot;data/sample1.txt&quot;</span></span>
-<span id="cb14-3"><a href="snakemake.html#cb14-3" tabindex="-1"></a>  <span class="ex">output:</span> <span class="st">&quot;refs/genome.fa.fai&quot;</span></span>
-<span id="cb14-4"><a href="snakemake.html#cb14-4" tabindex="-1"></a>  <span class="ex">shell:</span> <span class="st">&quot;samtools faidx {input}&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb30-1"><a href="snakemake.html#cb30-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
+<span id="cb30-2"><a href="snakemake.html#cb30-2" tabindex="-1"></a>  <span class="ex">input:</span> <span class="st">&quot;data/sample1.txt&quot;</span></span>
+<span id="cb30-3"><a href="snakemake.html#cb30-3" tabindex="-1"></a>  <span class="ex">output:</span> <span class="st">&quot;refs/genome.fa.fai&quot;</span></span>
+<span id="cb30-4"><a href="snakemake.html#cb30-4" tabindex="-1"></a>  <span class="ex">shell:</span> <span class="st">&quot;samtools faidx {input}&quot;</span></span></code></pre></div>
 <p>or</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb15-1"><a href="snakemake.html#cb15-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
-<span id="cb15-2"><a href="snakemake.html#cb15-2" tabindex="-1"></a>  <span class="ex">input:</span> </span>
-<span id="cb15-3"><a href="snakemake.html#cb15-3" tabindex="-1"></a>    <span class="st">&quot;data/sample1.txt&quot;</span></span>
-<span id="cb15-4"><a href="snakemake.html#cb15-4" tabindex="-1"></a>  <span class="ex">output:</span> </span>
-<span id="cb15-5"><a href="snakemake.html#cb15-5" tabindex="-1"></a>    <span class="st">&quot;refs/genome.fa.fai&quot;</span></span>
-<span id="cb15-6"><a href="snakemake.html#cb15-6" tabindex="-1"></a>  <span class="ex">shell:</span>  </span>
-<span id="cb15-7"><a href="snakemake.html#cb15-7" tabindex="-1"></a>    <span class="st">&quot;samtools faidx {input}&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb31-1"><a href="snakemake.html#cb31-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
+<span id="cb31-2"><a href="snakemake.html#cb31-2" tabindex="-1"></a>  <span class="ex">input:</span> </span>
+<span id="cb31-3"><a href="snakemake.html#cb31-3" tabindex="-1"></a>    <span class="st">&quot;data/sample1.txt&quot;</span></span>
+<span id="cb31-4"><a href="snakemake.html#cb31-4" tabindex="-1"></a>  <span class="ex">output:</span> </span>
+<span id="cb31-5"><a href="snakemake.html#cb31-5" tabindex="-1"></a>    <span class="st">&quot;refs/genome.fa.fai&quot;</span></span>
+<span id="cb31-6"><a href="snakemake.html#cb31-6" tabindex="-1"></a>  <span class="ex">shell:</span>  </span>
+<span id="cb31-7"><a href="snakemake.html#cb31-7" tabindex="-1"></a>    <span class="st">&quot;samtools faidx {input}&quot;</span></span></code></pre></div>
 </div>
 <div id="multiple-unordered-files" class="section level5 hasAnchor" number="5.2.2.2.2">
 <h5><span class="header-section-number">5.2.2.2.2</span> Multiple unordered files<a href="snakemake.html#multiple-unordered-files" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<div class="sourceCode" id="cb16"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb16-1"><a href="snakemake.html#cb16-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
-<span id="cb16-2"><a href="snakemake.html#cb16-2" tabindex="-1"></a>  <span class="ex">input:</span>  [<span class="st">&quot;results/a.counts.txt&quot;</span>, <span class="st">&quot;results/b.counts.txt&quot;</span>]</span>
-<span id="cb16-3"><a href="snakemake.html#cb16-3" tabindex="-1"></a>  <span class="ex">output:</span> <span class="st">&quot;results/merged.tsv&quot;</span></span>
-<span id="cb16-4"><a href="snakemake.html#cb16-4" tabindex="-1"></a>  <span class="ex">shell:</span>  <span class="st">&quot;cat {input} &gt; {output}&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb32-1"><a href="snakemake.html#cb32-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
+<span id="cb32-2"><a href="snakemake.html#cb32-2" tabindex="-1"></a>  <span class="ex">input:</span>  [<span class="st">&quot;results/a.counts.txt&quot;</span>, <span class="st">&quot;results/b.counts.txt&quot;</span>]</span>
+<span id="cb32-3"><a href="snakemake.html#cb32-3" tabindex="-1"></a>  <span class="ex">output:</span> <span class="st">&quot;results/merged.tsv&quot;</span></span>
+<span id="cb32-4"><a href="snakemake.html#cb32-4" tabindex="-1"></a>  <span class="ex">shell:</span>  <span class="st">&quot;cat {input} &gt; {output}&quot;</span></span></code></pre></div>
 <p>In this case, <code>{input}</code> expands to a space-separated list, this example resulting in:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb17-1"><a href="snakemake.html#cb17-1" tabindex="-1"></a><span class="st">&quot;cat results/a.counts.txt results/b.counts.txt &gt; results/merged.tsv&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb33-1"><a href="snakemake.html#cb33-1" tabindex="-1"></a><span class="st">&quot;cat results/a.counts.txt results/b.counts.txt &gt; results/merged.tsv&quot;</span></span></code></pre></div>
 </div>
 <div id="named-children-recommended-for-clarity" class="section level5 hasAnchor" number="5.2.2.2.3">
 <h5><span class="header-section-number">5.2.2.2.3</span> Named children (recommended for clarity)<a href="snakemake.html#named-children-recommended-for-clarity" class="anchor-section" aria-label="Anchor link to header"></a></h5>
-<div class="sourceCode" id="cb18"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb18-1"><a href="snakemake.html#cb18-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
-<span id="cb18-2"><a href="snakemake.html#cb18-2" tabindex="-1"></a>  <span class="ex">input:</span></span>
-<span id="cb18-3"><a href="snakemake.html#cb18-3" tabindex="-1"></a>    <span class="va">read1</span><span class="op">=</span><span class="st">&quot;reads/sample1_R1.fastq.gz&quot;</span>,</span>
-<span id="cb18-4"><a href="snakemake.html#cb18-4" tabindex="-1"></a>    <span class="va">read2</span><span class="op">=</span><span class="st">&quot;reads/sample1_R2.fastq.gz&quot;</span>,</span>
-<span id="cb18-5"><a href="snakemake.html#cb18-5" tabindex="-1"></a>    <span class="va">ref</span><span class="op">=</span><span class="st">&quot;refs/genome.fa&quot;</span></span>
-<span id="cb18-6"><a href="snakemake.html#cb18-6" tabindex="-1"></a>  <span class="ex">output:</span></span>
-<span id="cb18-7"><a href="snakemake.html#cb18-7" tabindex="-1"></a>    <span class="va">bam</span><span class="op">=</span><span class="st">&quot;results/sample1.bam&quot;</span></span>
-<span id="cb18-8"><a href="snakemake.html#cb18-8" tabindex="-1"></a>  <span class="ex">shell:</span></span>
-<span id="cb18-9"><a href="snakemake.html#cb18-9" tabindex="-1"></a>    <span class="st">&quot;bwa mem {input.ref} {input.read1} {input.read2} | &quot;</span></span>
-<span id="cb18-10"><a href="snakemake.html#cb18-10" tabindex="-1"></a>    <span class="st">&quot;samtools view -b -o {output.bam} 2&gt; {log.err}&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb34-1"><a href="snakemake.html#cb34-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
+<span id="cb34-2"><a href="snakemake.html#cb34-2" tabindex="-1"></a>  <span class="ex">input:</span></span>
+<span id="cb34-3"><a href="snakemake.html#cb34-3" tabindex="-1"></a>    <span class="va">read1</span><span class="op">=</span><span class="st">&quot;reads/sample1_R1.fastq.gz&quot;</span>,</span>
+<span id="cb34-4"><a href="snakemake.html#cb34-4" tabindex="-1"></a>    <span class="va">read2</span><span class="op">=</span><span class="st">&quot;reads/sample1_R2.fastq.gz&quot;</span>,</span>
+<span id="cb34-5"><a href="snakemake.html#cb34-5" tabindex="-1"></a>    <span class="va">ref</span><span class="op">=</span><span class="st">&quot;refs/genome.fa&quot;</span></span>
+<span id="cb34-6"><a href="snakemake.html#cb34-6" tabindex="-1"></a>  <span class="ex">output:</span></span>
+<span id="cb34-7"><a href="snakemake.html#cb34-7" tabindex="-1"></a>    <span class="va">bam</span><span class="op">=</span><span class="st">&quot;results/sample1.bam&quot;</span></span>
+<span id="cb34-8"><a href="snakemake.html#cb34-8" tabindex="-1"></a>  <span class="ex">shell:</span></span>
+<span id="cb34-9"><a href="snakemake.html#cb34-9" tabindex="-1"></a>    <span class="st">&quot;bwa mem {input.ref} {input.read1} {input.read2} | &quot;</span></span>
+<span id="cb34-10"><a href="snakemake.html#cb34-10" tabindex="-1"></a>    <span class="st">&quot;samtools view -b -o {output.bam} 2&gt; {log.err}&quot;</span></span></code></pre></div>
 <p>Use dot notation like <code>{input.read1}</code>, <code>{output.bam}</code>, etc.</p>
 </div>
 </div>
@@ -2222,54 +2230,54 @@ Snakemake is particularly popular in bioinformatics and computational biology, w
 <div id="shell" class="section level5 hasAnchor" number="5.2.2.3.1">
 <h5><span class="header-section-number">5.2.2.3.1</span> Shell<a href="snakemake.html#shell" class="anchor-section" aria-label="Anchor link to header"></a></h5>
 <p>The most common one is a regular shell command:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb19-1"><a href="snakemake.html#cb19-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
-<span id="cb19-2"><a href="snakemake.html#cb19-2" tabindex="-1"></a>  <span class="ex">input:</span></span>
-<span id="cb19-3"><a href="snakemake.html#cb19-3" tabindex="-1"></a>    <span class="st">&quot;data/sample1.txt&quot;</span></span>
-<span id="cb19-4"><a href="snakemake.html#cb19-4" tabindex="-1"></a>  <span class="ex">output:</span></span>
-<span id="cb19-5"><a href="snakemake.html#cb19-5" tabindex="-1"></a>    <span class="st">&quot;results/sample1.txt&quot;</span></span>
-<span id="cb19-6"><a href="snakemake.html#cb19-6" tabindex="-1"></a>  <span class="ex">shell:</span></span>
-<span id="cb19-7"><a href="snakemake.html#cb19-7" tabindex="-1"></a>    <span class="st">&quot;wc -l {input} | awk &#39;{{print </span><span class="va">$1</span><span class="st">}}&#39; &gt; {output}&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb35-1"><a href="snakemake.html#cb35-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
+<span id="cb35-2"><a href="snakemake.html#cb35-2" tabindex="-1"></a>  <span class="ex">input:</span></span>
+<span id="cb35-3"><a href="snakemake.html#cb35-3" tabindex="-1"></a>    <span class="st">&quot;data/sample1.txt&quot;</span></span>
+<span id="cb35-4"><a href="snakemake.html#cb35-4" tabindex="-1"></a>  <span class="ex">output:</span></span>
+<span id="cb35-5"><a href="snakemake.html#cb35-5" tabindex="-1"></a>    <span class="st">&quot;results/sample1.txt&quot;</span></span>
+<span id="cb35-6"><a href="snakemake.html#cb35-6" tabindex="-1"></a>  <span class="ex">shell:</span></span>
+<span id="cb35-7"><a href="snakemake.html#cb35-7" tabindex="-1"></a>    <span class="st">&quot;wc -l {input} | awk &#39;{{print </span><span class="va">$1</span><span class="st">}}&#39; &gt; {output}&quot;</span></span></code></pre></div>
 <p>The command definition can also be more complex, and expressed in multiple lines:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb20-1"><a href="snakemake.html#cb20-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
-<span id="cb20-2"><a href="snakemake.html#cb20-2" tabindex="-1"></a>  <span class="ex">input:</span></span>
-<span id="cb20-3"><a href="snakemake.html#cb20-3" tabindex="-1"></a>    <span class="st">&quot;data/sample1.txt&quot;</span></span>
-<span id="cb20-4"><a href="snakemake.html#cb20-4" tabindex="-1"></a>  <span class="ex">output:</span></span>
-<span id="cb20-5"><a href="snakemake.html#cb20-5" tabindex="-1"></a>    <span class="st">&quot;results/sample1.txt&quot;</span></span>
-<span id="cb20-6"><a href="snakemake.html#cb20-6" tabindex="-1"></a>  <span class="ex">shell:</span></span>
-<span id="cb20-7"><a href="snakemake.html#cb20-7" tabindex="-1"></a>    <span class="st">&quot;&quot;&quot;</span></span>
-<span id="cb20-8"><a href="snakemake.html#cb20-8" tabindex="-1"></a><span class="st">    coverm genome </span><span class="dt">\</span></span>
-<span id="cb20-9"><a href="snakemake.html#cb20-9" tabindex="-1"></a><span class="st">        -b {input} </span><span class="dt">\</span></span>
-<span id="cb20-10"><a href="snakemake.html#cb20-10" tabindex="-1"></a><span class="st">         -s _ </span><span class="dt">\</span></span>
-<span id="cb20-11"><a href="snakemake.html#cb20-11" tabindex="-1"></a><span class="st">         -m relative_abundance count </span><span class="dt">\</span></span>
-<span id="cb20-12"><a href="snakemake.html#cb20-12" tabindex="-1"></a><span class="st">        --min-covered-fraction 0 </span><span class="dt">\</span></span>
-<span id="cb20-13"><a href="snakemake.html#cb20-13" tabindex="-1"></a><span class="st">        &gt; {output}</span></span>
-<span id="cb20-14"><a href="snakemake.html#cb20-14" tabindex="-1"></a></span>
-<span id="cb20-15"><a href="snakemake.html#cb20-15" tabindex="-1"></a><span class="st">    if [ </span><span class="va">$(</span><span class="fu">stat</span> <span class="at">-c</span> <span class="st">&#39;%s&#39;</span> {input}<span class="va">)</span><span class="st"> -lt 1 ]</span></span>
-<span id="cb20-16"><a href="snakemake.html#cb20-16" tabindex="-1"></a><span class="st">     then</span></span>
-<span id="cb20-17"><a href="snakemake.html#cb20-17" tabindex="-1"></a><span class="st">     rm {input}</span></span>
-<span id="cb20-18"><a href="snakemake.html#cb20-18" tabindex="-1"></a><span class="st">    fi</span></span>
-<span id="cb20-19"><a href="snakemake.html#cb20-19" tabindex="-1"></a><span class="st">    &quot;&quot;&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb36-1"><a href="snakemake.html#cb36-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
+<span id="cb36-2"><a href="snakemake.html#cb36-2" tabindex="-1"></a>  <span class="ex">input:</span></span>
+<span id="cb36-3"><a href="snakemake.html#cb36-3" tabindex="-1"></a>    <span class="st">&quot;data/sample1.txt&quot;</span></span>
+<span id="cb36-4"><a href="snakemake.html#cb36-4" tabindex="-1"></a>  <span class="ex">output:</span></span>
+<span id="cb36-5"><a href="snakemake.html#cb36-5" tabindex="-1"></a>    <span class="st">&quot;results/sample1.txt&quot;</span></span>
+<span id="cb36-6"><a href="snakemake.html#cb36-6" tabindex="-1"></a>  <span class="ex">shell:</span></span>
+<span id="cb36-7"><a href="snakemake.html#cb36-7" tabindex="-1"></a>    <span class="st">&quot;&quot;&quot;</span></span>
+<span id="cb36-8"><a href="snakemake.html#cb36-8" tabindex="-1"></a><span class="st">    coverm genome </span><span class="dt">\</span></span>
+<span id="cb36-9"><a href="snakemake.html#cb36-9" tabindex="-1"></a><span class="st">        -b {input} </span><span class="dt">\</span></span>
+<span id="cb36-10"><a href="snakemake.html#cb36-10" tabindex="-1"></a><span class="st">         -s _ </span><span class="dt">\</span></span>
+<span id="cb36-11"><a href="snakemake.html#cb36-11" tabindex="-1"></a><span class="st">         -m relative_abundance count </span><span class="dt">\</span></span>
+<span id="cb36-12"><a href="snakemake.html#cb36-12" tabindex="-1"></a><span class="st">        --min-covered-fraction 0 </span><span class="dt">\</span></span>
+<span id="cb36-13"><a href="snakemake.html#cb36-13" tabindex="-1"></a><span class="st">        &gt; {output}</span></span>
+<span id="cb36-14"><a href="snakemake.html#cb36-14" tabindex="-1"></a></span>
+<span id="cb36-15"><a href="snakemake.html#cb36-15" tabindex="-1"></a><span class="st">    if [ </span><span class="va">$(</span><span class="fu">stat</span> <span class="at">-c</span> <span class="st">&#39;%s&#39;</span> {input}<span class="va">)</span><span class="st"> -lt 1 ]</span></span>
+<span id="cb36-16"><a href="snakemake.html#cb36-16" tabindex="-1"></a><span class="st">     then</span></span>
+<span id="cb36-17"><a href="snakemake.html#cb36-17" tabindex="-1"></a><span class="st">     rm {input}</span></span>
+<span id="cb36-18"><a href="snakemake.html#cb36-18" tabindex="-1"></a><span class="st">    fi</span></span>
+<span id="cb36-19"><a href="snakemake.html#cb36-19" tabindex="-1"></a><span class="st">    &quot;&quot;&quot;</span></span></code></pre></div>
 </div>
 <div id="script" class="section level5 hasAnchor" number="5.2.2.3.2">
 <h5><span class="header-section-number">5.2.2.3.2</span> Script<a href="snakemake.html#script" class="anchor-section" aria-label="Anchor link to header"></a></h5>
 <p>Or can run python scripts instead:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb21-1"><a href="snakemake.html#cb21-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
-<span id="cb21-2"><a href="snakemake.html#cb21-2" tabindex="-1"></a>  <span class="ex">input:</span></span>
-<span id="cb21-3"><a href="snakemake.html#cb21-3" tabindex="-1"></a>    <span class="st">&quot;data/sample1.txt&quot;</span></span>
-<span id="cb21-4"><a href="snakemake.html#cb21-4" tabindex="-1"></a>  <span class="ex">output:</span></span>
-<span id="cb21-5"><a href="snakemake.html#cb21-5" tabindex="-1"></a>    <span class="st">&quot;results/sample1.txt&quot;</span></span>
-<span id="cb21-6"><a href="snakemake.html#cb21-6" tabindex="-1"></a>  <span class="ex">script:</span> <span class="st">&quot;scripts/normalize.py&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb37-1"><a href="snakemake.html#cb37-1" tabindex="-1"></a><span class="ex">rule</span> count_lines:</span>
+<span id="cb37-2"><a href="snakemake.html#cb37-2" tabindex="-1"></a>  <span class="ex">input:</span></span>
+<span id="cb37-3"><a href="snakemake.html#cb37-3" tabindex="-1"></a>    <span class="st">&quot;data/sample1.txt&quot;</span></span>
+<span id="cb37-4"><a href="snakemake.html#cb37-4" tabindex="-1"></a>  <span class="ex">output:</span></span>
+<span id="cb37-5"><a href="snakemake.html#cb37-5" tabindex="-1"></a>    <span class="st">&quot;results/sample1.txt&quot;</span></span>
+<span id="cb37-6"><a href="snakemake.html#cb37-6" tabindex="-1"></a>  <span class="ex">script:</span> <span class="st">&quot;scripts/normalize.py&quot;</span></span></code></pre></div>
 </div>
 <div id="run" class="section level5 hasAnchor" number="5.2.2.3.3">
 <h5><span class="header-section-number">5.2.2.3.3</span> Run<a href="snakemake.html#run" class="anchor-section" aria-label="Anchor link to header"></a></h5>
 <p>Or an inline Python block:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb22-1"><a href="snakemake.html#cb22-1" tabindex="-1"></a><span class="ex">rule</span> concat:</span>
-<span id="cb22-2"><a href="snakemake.html#cb22-2" tabindex="-1"></a>    <span class="ex">input:</span>  [<span class="st">&quot;pieces/a.txt&quot;</span>, <span class="st">&quot;pieces/b.txt&quot;</span>]</span>
-<span id="cb22-3"><a href="snakemake.html#cb22-3" tabindex="-1"></a>    <span class="ex">output:</span> <span class="st">&quot;all.txt&quot;</span></span>
-<span id="cb22-4"><a href="snakemake.html#cb22-4" tabindex="-1"></a>    <span class="ex">run:</span></span>
-<span id="cb22-5"><a href="snakemake.html#cb22-5" tabindex="-1"></a>        <span class="ex">with</span> open<span class="er">(</span><span class="va">output</span><span class="op">[</span><span class="dv">0</span><span class="op">]</span><span class="ex">,</span> <span class="st">&quot;w&quot;</span><span class="kw">)</span> <span class="fu">as</span> out:</span>
-<span id="cb22-6"><a href="snakemake.html#cb22-6" tabindex="-1"></a>            <span class="cf">for</span> p <span class="kw">in</span> input:</span>
-<span id="cb22-7"><a href="snakemake.html#cb22-7" tabindex="-1"></a>                <span class="ex">out.write</span><span class="er">(</span><span class="ex">open</span><span class="er">(</span><span class="ex">p</span><span class="kw">)</span><span class="fu">.read()</span><span class="kw">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb38-1"><a href="snakemake.html#cb38-1" tabindex="-1"></a><span class="ex">rule</span> concat:</span>
+<span id="cb38-2"><a href="snakemake.html#cb38-2" tabindex="-1"></a>    <span class="ex">input:</span>  [<span class="st">&quot;pieces/a.txt&quot;</span>, <span class="st">&quot;pieces/b.txt&quot;</span>]</span>
+<span id="cb38-3"><a href="snakemake.html#cb38-3" tabindex="-1"></a>    <span class="ex">output:</span> <span class="st">&quot;all.txt&quot;</span></span>
+<span id="cb38-4"><a href="snakemake.html#cb38-4" tabindex="-1"></a>    <span class="ex">run:</span></span>
+<span id="cb38-5"><a href="snakemake.html#cb38-5" tabindex="-1"></a>        <span class="ex">with</span> open<span class="er">(</span><span class="va">output</span><span class="op">[</span><span class="dv">0</span><span class="op">]</span><span class="ex">,</span> <span class="st">&quot;w&quot;</span><span class="kw">)</span> <span class="fu">as</span> out:</span>
+<span id="cb38-6"><a href="snakemake.html#cb38-6" tabindex="-1"></a>            <span class="cf">for</span> p <span class="kw">in</span> input:</span>
+<span id="cb38-7"><a href="snakemake.html#cb38-7" tabindex="-1"></a>                <span class="ex">out.write</span><span class="er">(</span><span class="ex">open</span><span class="er">(</span><span class="ex">p</span><span class="kw">)</span><span class="fu">.read()</span><span class="kw">)</span></span></code></pre></div>
 </div>
 </div>
 <div id="child-arguments" class="section level4 hasAnchor" number="5.2.2.4">
@@ -2285,23 +2293,23 @@ Snakemake is particularly popular in bioinformatics and computational biology, w
 <li>The input files of another</li>
 </ul>
 <p>When the output of one rule matches the input of another, Snakemake creates a connection between them—this connection is a dependency. Let’s see an example:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb23-1"><a href="snakemake.html#cb23-1" tabindex="-1"></a><span class="ex">rule</span> all:</span>
-<span id="cb23-2"><a href="snakemake.html#cb23-2" tabindex="-1"></a>    <span class="ex">input:</span> <span class="st">&quot;results/summary.txt&quot;</span></span>
-<span id="cb23-3"><a href="snakemake.html#cb23-3" tabindex="-1"></a></span>
-<span id="cb23-4"><a href="snakemake.html#cb23-4" tabindex="-1"></a><span class="ex">rule</span> preprocess:</span>
-<span id="cb23-5"><a href="snakemake.html#cb23-5" tabindex="-1"></a>    <span class="ex">input:</span> <span class="st">&quot;raw/data.csv&quot;</span></span>
-<span id="cb23-6"><a href="snakemake.html#cb23-6" tabindex="-1"></a>    <span class="ex">output:</span> <span class="st">&quot;processed/data_clean.csv&quot;</span></span>
-<span id="cb23-7"><a href="snakemake.html#cb23-7" tabindex="-1"></a>    <span class="ex">shell:</span> <span class="st">&quot;python scripts/clean_data.py {input} {output}&quot;</span></span>
-<span id="cb23-8"><a href="snakemake.html#cb23-8" tabindex="-1"></a></span>
-<span id="cb23-9"><a href="snakemake.html#cb23-9" tabindex="-1"></a><span class="ex">rule</span> summarize:</span>
-<span id="cb23-10"><a href="snakemake.html#cb23-10" tabindex="-1"></a>    <span class="ex">input:</span> <span class="st">&quot;processed/data_clean.csv&quot;</span></span>
-<span id="cb23-11"><a href="snakemake.html#cb23-11" tabindex="-1"></a>    <span class="ex">output:</span> <span class="st">&quot;results/summary.txt&quot;</span></span>
-<span id="cb23-12"><a href="snakemake.html#cb23-12" tabindex="-1"></a>    <span class="ex">shell:</span> <span class="st">&quot;python scripts/summarize.py {input} {output}&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb39-1"><a href="snakemake.html#cb39-1" tabindex="-1"></a><span class="ex">rule</span> all:</span>
+<span id="cb39-2"><a href="snakemake.html#cb39-2" tabindex="-1"></a>    <span class="ex">input:</span> <span class="st">&quot;results/summary.txt&quot;</span></span>
+<span id="cb39-3"><a href="snakemake.html#cb39-3" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="snakemake.html#cb39-4" tabindex="-1"></a><span class="ex">rule</span> preprocess:</span>
+<span id="cb39-5"><a href="snakemake.html#cb39-5" tabindex="-1"></a>    <span class="ex">input:</span> <span class="st">&quot;raw/data.csv&quot;</span></span>
+<span id="cb39-6"><a href="snakemake.html#cb39-6" tabindex="-1"></a>    <span class="ex">output:</span> <span class="st">&quot;processed/data_clean.csv&quot;</span></span>
+<span id="cb39-7"><a href="snakemake.html#cb39-7" tabindex="-1"></a>    <span class="ex">shell:</span> <span class="st">&quot;python scripts/clean_data.py {input} {output}&quot;</span></span>
+<span id="cb39-8"><a href="snakemake.html#cb39-8" tabindex="-1"></a></span>
+<span id="cb39-9"><a href="snakemake.html#cb39-9" tabindex="-1"></a><span class="ex">rule</span> summarize:</span>
+<span id="cb39-10"><a href="snakemake.html#cb39-10" tabindex="-1"></a>    <span class="ex">input:</span> <span class="st">&quot;processed/data_clean.csv&quot;</span></span>
+<span id="cb39-11"><a href="snakemake.html#cb39-11" tabindex="-1"></a>    <span class="ex">output:</span> <span class="st">&quot;results/summary.txt&quot;</span></span>
+<span id="cb39-12"><a href="snakemake.html#cb39-12" tabindex="-1"></a>    <span class="ex">shell:</span> <span class="st">&quot;python scripts/summarize.py {input} {output}&quot;</span></span></code></pre></div>
 </div>
 <div id="executing-the-pipeline" class="section level2 hasAnchor" number="5.4">
 <h2><span class="header-section-number">5.4</span> Executing the pipeline<a href="snakemake.html#executing-the-pipeline" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The execution of the pipeline is very straightforward. From the command line, in the directory containing your Snakefile, just run:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb24-1"><a href="snakemake.html#cb24-1" tabindex="-1"></a><span class="ex">snakemake</span></span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb40-1"><a href="snakemake.html#cb40-1" tabindex="-1"></a><span class="ex">snakemake</span></span></code></pre></div>
 <p>By default, Snakemake looks for a file named Snakefile in the current directory, or in the <code>workflow</code> directory, both with and without a capital S.</p>
 <ul>
 <li><code>snakefile</code></li>
@@ -2310,7 +2318,7 @@ Snakemake is particularly popular in bioinformatics and computational biology, w
 <li><code>workflow/Snakefile</code></li>
 </ul>
 <p>It is also possible to define a different name for the snakefile, usually with the extension <code>.smk</code>. If so, you need to tell snakemake where the snakefile is:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb25-1"><a href="snakemake.html#cb25-1" tabindex="-1"></a><span class="ex">snakemake</span> <span class="at">-s</span> mydirectory/mysnakefile.smk</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode sh script-source"><code class="sourceCode bash"><span id="cb41-1"><a href="snakemake.html#cb41-1" tabindex="-1"></a><span class="ex">snakemake</span> <span class="at">-s</span> mydirectory/mysnakefile.smk</span></code></pre></div>
 </div>
 </div>
             </section>

@@ -43,21 +43,169 @@ Before diving into high-performance computing and Snakemake, it's essential to u
 The command line, also known as the terminal or shell, is a text-based interface that allows users to interact with their 
 computer's operating system. Here are some fundamental commands and concepts to get you started:
 
-- **Navigating directories:**
-  - `pwd`: Print the current working directory.
-  - `ls`: List files and directories in the current directory.
-  - `cd <directory>`: Change to a specified directory.
-- **File operations:**
-  - `cp <source> <destination>`: Copy files or directories.
-  - `mv <source> <destination>`: Move or rename files or directories.
-  - `rm <file>`: Remove files.
-  - `mkdir <directory>`: Create a new directory.
-- **Viewing file contents:**
-  - `cat <file>`: Display the contents of a file.
-  - `less <file>`: View file contents one page at a time.
-- **Getting help:**
-  - `man <command>`: Display the manual for a command.
-  - `<command> --help`: Show help information for a command.
+## Navigating Directories
+
+Moving around the filesystem efficiently is the first step to feeling comfortable at the command line. 
+The commands below help you check where you are, list what's around you, and jump to the folder you need.
+
+-   **`pwd`** --- *Print Working Directory*\
+    Shows your current location in the filesystem.\
+    **Example:**
+
+    ``` bash
+    $ pwd
+    /home/user/projects
+    ```
+
+-   **`ls`** --- List files and directories\
+    Useful options:
+
+    -   `ls -l` --- long format (permissions, sizes, timestamps)\
+    -   `ls -a` --- show hidden files\
+        **Example:**\
+
+    ``` bash
+    $ ls -la
+    drwxr-xr-x  5 user user  4096 Feb 10 project1
+    -rw-r--r--  1 user user   512 Feb 10 notes.txt
+    ```
+
+-   **`cd <directory>`** --- Change directory\
+    **Examples:**
+
+    ``` bash
+    cd project1
+    cd ..        # go up one level
+    cd ~         # go to home directory
+    cd /path/to/folder
+    ```
+
+## Working With Files and Directories
+
+Once you can move around, you'll want to organize what you find. These commands cover copying, 
+moving, deleting, and creating files and folders so you can keep your workspace tidy.
+
+-   **`cp <source> <destination>`** --- Copy files or folders\
+    Add `-r` to copy directories recursively.\
+    **Examples:**
+
+    ``` bash
+    cp file.txt backup.txt
+    cp -r data/ backup_data/
+    ```
+
+-   **`mv <source> <destination>`** --- Move or rename files\
+    **Examples:**
+
+    ``` bash
+    mv old_name.txt new_name.txt
+    mv file.txt /home/user/documents/
+    ```
+
+-   **`rm <file>`** --- Remove files\
+    ⚠️ *Removal is permanent --- use with caution.*\
+    Add `-r` to remove directories.\
+    **Examples:**
+
+    ``` bash
+    rm old_file.txt
+    rm -r old_folder/
+    ```
+
+-   **`mkdir <directory>`** --- Create new directories\
+    **Examples:**
+
+    ``` bash
+    mkdir results
+    mkdir -p path/to/new/folder   # creates nested folders
+    ```
+
+## Viewing File Contents
+
+When you just need to inspect or skim a file, these options let you read it right from the 
+terminal without opening an editor.
+
+-   **`cat <file>`** --- Print entire file
+
+    ``` bash
+    cat sample.txt
+    ```
+
+-   **`less <file>`** --- View large files page-by-page\
+    Useful shortcuts:
+
+    -   `q` --- quit\
+    -   `↑/↓` --- scroll\
+    -   `/word` --- search\
+
+    ``` bash
+    less longfile.log
+    ```
+
+-   **`head <file>`** --- Show the first 10 lines
+
+    ``` bash
+    head data.txt
+    ```
+
+-   **`tail <file>`** --- Show the last 10 lines
+
+    ``` bash
+    tail data.txt
+    tail -f logfile.log  # follow live updates
+    ```
+
+## File and Directory Information
+
+Disk quotas matter on shared systems. Use these commands to see how much space your files use 
+and how much is left on the system.
+
+-   **`du`** --- Disk usage summary
+
+    ``` bash
+    du -sh folder/
+    ```
+
+-   **`df -h`** --- Show available disk space
+
+    ``` bash
+    df -h
+    ```
+
+## Searching for Files and Text
+
+Finding the right file or line quickly saves time. These tools search filenames and file contents 
+directly from the command line.
+
+-   **`grep <pattern> <file>`** --- Search text in files
+
+    ``` bash
+    grep "ERROR" logfile.log
+    grep -i "gene" annotations.txt    # case-insensitive
+    grep -r "pattern" ./data          # search recursively
+    ```
+
+-   **`find <path> -name <pattern>`** --- Search for files
+
+    ``` bash
+    find . -name "*.txt"
+    ```
+
+## Useful Beginner Tips
+
+A few small habits make terminal work faster and less error-prone. Try these shortcuts and helpers as you practice.
+
+-   Press **Tab** to autocomplete commands and filenames.\
+
+-   Use **↑/↓** to browse command history.\
+
+-   Run `history` to see past commands.\
+
+-   Add comments in the terminal with `#`:
+
+    ``` bash
+    ls -la  # list files in detail including hidden ones
+    ```
 
 # High Performance Computation 
 

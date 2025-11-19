@@ -4,6 +4,12 @@ get-visual-studio-code-ready
 create-a-ssh-connection-to-mjolnir
 open-the-remote-explorer
 command-line-basics
+navigating-directories
+working-with-files-and-directories
+viewing-file-contents
+file-and-directory-information
+searching-for-files-and-text
+useful-beginner-tips
 high-performance-computation
 modules
 screen
