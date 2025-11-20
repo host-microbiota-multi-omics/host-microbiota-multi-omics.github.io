@@ -35,7 +35,7 @@ This should have created a SSH connection to Mjolnir, which will enable you to c
 
 1. Explorer
 2. Connect to remote > Open Folder
-3. Use the following path: /maps/projects/course_2/people/{ku-id}
+3. Use the following path: /maps/projects/course_1/people/{ku-id}
 
 # Command line basics
 
@@ -330,16 +330,12 @@ In this workshop, each participant will get allocated 4 CPUs and 16GB of memory 
 
 ```{sh eval=FALSE}
 srun \
-  --job-name=snakemake_workshop \
-  --account=teaching \
-  --reservation=snakemake_hackaton \
-  --partition=cpuqueue \
+  --job-name=hmmo \
   --nodes=1 \
-  --nodelist=mjolnircomp14fl \
   --time=08:00:00 \
   --mem=16G \
-  --cpus-per-task=4 \
-  --pty bash -I
+  --ntasks=4 \
+  --pty bash
 ```
 
 This will display for a few seconds, after which you will get connected to the computation node.
