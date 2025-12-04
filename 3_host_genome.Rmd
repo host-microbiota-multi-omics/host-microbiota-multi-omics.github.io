@@ -1,3 +1,125 @@
 # Host genome {-}
 
-## Sketching
+This section reconstructs host genomic relationships from low-coverage genome skimming data—enough breadth to
+capture species- and population-level signals without full assemblies. We extract host-aligned reads, optionally
+simplify to single-end for tools that require it, sketch genomes with Skmer, and derive pairwise distance
+matrices that feed into ordination and visualization. The core signal comes from k-mers (short subsequences of
+length k): their presence/absence patterns capture genome-wide similarities and differences, making them ideal
+for rapid, assembly-free comparison even when coverage is shallow.
+
+## Extracting host reads from BAM files
+
+Convert mapped BAMs to paired FASTQ to recover the host reads used for downstream genome sketching.
+
+```{sh eval=FALSE}
+rule bam_to_fastq:
+    input:
+        f"{BAMS}/{{sample}}.bam"
+    output:
+        r1=f"{WORKDIR}/genomics/reads/{{sample}}_1.fq",
+        r2=f"{WORKDIR}/genomics/reads/{{sample}}_2.fq"
+    shell:
+        """
+        module load samtools/1.21
+        samtools collate -u -O {input} | samtools fastq -1 {output.r1} -2 {output.r2}
+        """
+```
+
+## Simplifying reads for single-end tools
+
+Some tools only accept single-end input; this step keeps R1, drops R2, and consolidates into one file.
+
+```{sh eval=FALSE}
+rule simplify_reads:
+    input:
+        r1=f"{WORKDIR}/genomics/reads/{{sample}}_1.fq",
+        r2=f"{WORKDIR}/genomics/reads/{{sample}}_2.fq"
+    output:
+        f"{WORKDIR}/genomics/reads/{{sample}}/{{sample}}.fq"
+    localrule: True
+    shell:
+        """
+        rm {input.r2}
+        mv {input.r1} {output}
+        """
+```
+
+## Sketching host genome with Skmer
+
+Skmer creates compact k-mer sketches of each skimmed genome, retaining enough signal to approximate
+whole-genome distances while avoiding heavy assemblies. It hashes representative k-mers into a small index,
+making downstream pairwise comparisons fast and memory-light even when coverage is uneven.
+
+```{sh eval=FALSE}
+rule skmer_reference:
+    input:
+        f"{WORKDIR}/genomics/reads/{{sample}}/{{sample}}.fq"
+    output:
+        f"{WORKDIR}/genomics/skmer/{{sample}}/{{sample}}.dat"
+    params:
+        inputdir=f"{WORKDIR}/genomics/reads/{{sample}}",
+        outputbase="skmer"
+    shell:
+        """
+        module load skmer/3.3.0
+        skmer reference {params.inputdir} -p {threads} -l {params.outputbase}
+        """
+```
+
+## Calculating pairwise distances between host genomes
+
+Compute all-vs-all Skmer distances across samples, yielding a genome-wide dissimilarity matrix that reflects
+shared and unique k-mers from the skimmed reads. This captures broad phylogenetic structure and fine-scale
+population differences without requiring assemblies.
+
+```{sh eval=FALSE}
+rule skmer_distance:
+    input:
+        expand(f"{WORKDIR}/genomics/skmer/{{sample}}/{{sample}}.dat", sample=SAMPLES)
+    output:
+        f"{WORKDIR}/genomics/distance_matrix.txt"
+    params:
+        inputdir=f"{WORKDIR}/genomics/skmer",
+        outputbase="distance_matrix"
+    shell:
+        """
+        module load skmer/3.3.0
+        skmer distance {params.inputdir} -p {threads} -o {params.outputbase}
+        """
+```
+
+## PCoA from distance matrix
+
+Project the distance matrix into principal coordinate space to visualize host genomic structure.
+
+```{sh eval=FALSE}
+rule skmer_pcoa:
+    input:
+        f"{WORKDIR}/genomics/distance_matrix.txt"
+    output:
+        f"{WORKDIR}/genomics/pcoa.png"
+    params:
+        outputbase="distance_matrix"
+    shell:
+        """
+        python workflow/scripts/pcoa_from_distance.py --dist {input} --out-prefix pcoa
+        """
+```
+
+## Heatmap from distance matrix
+
+Render the distance matrix as a clustered heatmap for quick inspection of host relatedness patterns.
+
+```{sh eval=FALSE}
+rule skmer_heatmap:
+    input:
+        f"{WORKDIR}/genomics/distance_matrix.txt"
+    output:
+        f"{WORKDIR}/genomics/heatmap.png"
+    params:
+        outputbase="distance_matrix"
+    shell:
+        """
+        python workflow/scripts/heatmap_from_distance.py --dist {input} --out {output}
+        """
+```
