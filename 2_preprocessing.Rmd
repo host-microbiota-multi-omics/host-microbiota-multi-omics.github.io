@@ -146,3 +146,59 @@ rule split_reads:
         samtools view -F12 -@ {threads} {input} | awk '{{sum += length($10)}} END {{print sum}}' > {output.hostbases}
         """
 ```
+
+## Read-based profiling using SingleM
+
+This rule profiles the microbial community composition of metagenomic samples using SingleM, which targets single-copy marker genes to estimate taxonomic abundances. 
+It takes the quality-filtered, host-depleted paired-end FASTQ files as input and runs the SingleM pipeline to generate a taxonomic profile for each sample. 
+The output is a profile file that summarizes the relative abundances of microbial taxa present in the metagenomic dataset.
+
+```{sh eval=FALSE}
+rule singlem:
+    input: 
+        r1=f"{WORKDIR}/preprocessing/fastp_unique/{{sample}}_1.fq.gz",
+        r2=f"{WORKDIR}/preprocessing/fastp_unique/{{sample}}_2.fq.gz"
+    output:
+        f"{WORKDIR}/preprocessing/singlem/{{sample}}.profile"
+    params:
+        siglemdir = f"{WORKDIR}/preprocessing/singlem/"
+    shell:
+        """
+        module load singlem/0.19.0
+        export SINGLEM_METAPACKAGE_PATH=/maps/datasets/globe_databases/singlem/5.4.0/S5.4.0.GTDB_r226.metapackage_20250331.smpkg.zb
+        mkdir -p {params.siglemdir}
+        singlem pipe \
+            -1 {input.r1} \
+            -2 {input.r2} \
+            -p {output}
+        """
+```
+
+## Metagenomic fraction estimation using SingleM prokaryotic fraction
+
+This rule estimates the microbial fraction of metagenomic samples using SingleM's microbial_fraction command. 
+It takes the quality-filtered paired-end FASTQ files and the SingleM taxonomic profile as inputs, 
+and computes the proportion of reads that are of microbial origin. The output is a fraction file that quantifies the microbial content in each sample, 
+which is useful for interpreting the assembly, binning and quantification results.
+
+```{sh eval=FALSE}
+rule spf:
+    input: 
+        r1=f"{WORKDIR}/preprocessing/fastp/{{sample}}_1.fq.gz",
+        r2=f"{WORKDIR}/preprocessing/fastp/{{sample}}_2.fq.gz",
+        profile=f"{WORKDIR}/preprocessing/singlem/{{sample}}.profile"
+    output:
+        f"{WORKDIR}/preprocessing/singlem/{{sample}}.fraction"
+    params:
+        workdir = lambda wc: f"{WORKDIR}/preprocessing/singlem/{wc.sample}"
+    threads: 1
+    shell:
+        """
+        module load singlem/0.19.0
+        export SINGLEM_METAPACKAGE_PATH=/maps/datasets/globe_databases/singlem/5.4.0/S5.4.0.GTDB_r226.metapackage_20250331.smpkg.zb
+        singlem microbial_fraction \
+            -1 {input.r1} \
+            -2 {input.r2} \
+            -p {input.profile} > {output}
+        """
+```

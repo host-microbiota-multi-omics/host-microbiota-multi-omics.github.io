@@ -210,7 +210,6 @@ rule metabat2:
         """
 ```
 
-
 ## Taxonomic annotation with GTDB-tk
 
 GTDB-Tk classifies each dereplicated MAG against the curated Genome Taxonomy Database, providing standardized
@@ -220,15 +219,65 @@ flagging potential contaminants or mis-binned genomes. The rule will take the de
 and emit per-genome classifications plus summary reports for quick review.
 
 ```{sh eval=FALSE}
+rule gtdbtk:
+    output:
+        f"{WORKDIR}/metagenomics/gtdbtk/classify/gtdbtk.bac120.summary.tsv"
+    params:
+        bindir=BINDIR,
+        outdir=f"{WORKDIR}/metagenomics/gtdbtk"
+    shell:
+        """
+        export GTDBTK_DATA_PATH=/datasets/globe_databases/gtdbtk_db/20241001
+        gtdbtk classify_wf \
+            --genome_dir {params.bindir} \
+            --out_dir {params.outdir} \
+            --cpus {threads} \
+            --extension fa \
+            --skip_ani_screen
 ```
 
-## Functional annotation with DRAM
+## Gene prediction with Prodigal
 
-DRAM annotates MAGs by integrating multiple databases (KEGG, UniRef, PFAM, MEROPS, etc.) to assign gene-level
-functions and pathway summaries. Running DRAM on the dereplicated, taxonomically classified bins yields genome-
-scale metabolic profiles, gene presence/absence tables, and curated reports that are ready for downstream
-comparative and ecological analyses. The rule will consume the bin FASTA files, run DRAM’s annotate/distill
-pipeline, and produce summarized tables for interpretation and visualization.
+This rule predicts genes in dereplicated MAGs using Prodigal, generating GFF annotations, nucleotide sequences, and amino acid sequences. 
+Gene prediction is a crucial step for functional annotation, as it identifies coding regions within the MAGs that can be further analyzed for their potential roles in microbial metabolism and ecology.
 
 ```{sh eval=FALSE}
+rule prodigal:
+    input:
+        f"{BINDIR}/{{mag}}.fa"
+    output:
+        gff=f"{WORKDIR}/metagenomics/prodigal/{{mag}}.gff",
+        nt=f"{WORKDIR}/metagenomics/prodigal/{{mag}}.fna",
+        aa=f"{WORKDIR}/metagenomics/prodigal/{{mag}}.faa"
+    shell:
+        """module 
+        mkdir -p $(dirname {output.gff})
+        module load pprodigal/1.0.1
+        prodigal -i {input} -o {output.gff} -d {output.nt} -a {output.aa} -p single
+        """
+```
+
+
+## Functional annotation with KEGG hmms
+
+This rule annotates dereplicated MAGs using KEGG HMM profiles to assign functional roles based on gene content.  
+It takes the predicted amino acid sequences from Prodigal and scans them against the KEGG Orthology HMM database using HMMER's hmmscan. 
+The output includes both a detailed text file and a tab-separated values (TSV) file summarizing the functional annotations for each gene. 
+This functional annotation step is essential for understanding the metabolic capabilities of the reconstructed genomes and their potential roles 
+within microbial communities.
+
+```{sh eval=FALSE}
+rule kegg:
+    input:
+        f"{WORKDIR}/metagenomics/prodigal/{{mag}}.faa"
+    output:
+        txt=f"{WORKDIR}/metagenomics/kegg/{{mag}}.txt",
+        tsv=f"{WORKDIR}/metagenomics/kegg/{{mag}}.tsv"
+    params:
+        db="/projects/alberdilab/data/databases/drakkar/kofams"
+    shell:
+        """
+        module load hmmer/3.3.2
+        hmmscan -o {output.txt} --tblout {output.tsv} -E 1e-10 --noali {params.db} {input}
+        """
 ```

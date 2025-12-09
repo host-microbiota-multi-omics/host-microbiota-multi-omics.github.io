@@ -42,6 +42,8 @@ host-mapping
 host-genome-mapping
 mapping-statistics
 host-microbiota-split
+read-based-profiling-using-singlem
+metagenomic-fraction-estimation-using-singlem-prokaryotic-fraction
 extracting-host-reads-from-bam-files
 simplifying-reads-for-single-end-tools
 sketching-host-genome-with-skmer
@@ -56,4 +58,5 @@ binning-with-metabat2
 bin-quality-with-checkm
 bin-dereplication-with-drep
 taxonomic-annotation-with-gtdb-tk
-functional-annotation-with-dram
+gene-prediction-with-prodigal
+functional-annotation-with-kegg-hmms
