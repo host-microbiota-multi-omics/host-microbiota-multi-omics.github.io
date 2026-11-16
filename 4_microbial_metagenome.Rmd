@@ -1,4 +1,4 @@
-# Microbial metagenome {-}
+# Microbial metagenome
 
 Microbial metagenomic assembly and binning are key steps in reconstructing the genomes of microorganisms present 
 in complex communities. This chapter describes the Snakemake rules that perform metagenomic assembly using MEGAHIT, 
@@ -260,7 +260,7 @@ rule prodigal:
 
 ## Functional annotation with KEGG hmms
 
-This rule annotates dereplicated MAGs using KEGG HMM profiles to assign functional roles based on gene content.  
+This rule annotates dereplicated MAGs using KEGG HMM profiles to assign functional roles based on gene content. 
 It takes the predicted amino acid sequences from Prodigal and scans them against the KEGG Orthology HMM database using HMMER's hmmscan. 
 The output includes both a detailed text file and a tab-separated values (TSV) file summarizing the functional annotations for each gene. 
 This functional annotation step is essential for understanding the metabolic capabilities of the reconstructed genomes and their potential roles 

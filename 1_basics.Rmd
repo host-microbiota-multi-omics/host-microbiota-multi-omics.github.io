@@ -35,7 +35,7 @@ This should have created a SSH connection to Mjolnir, which will enable you to c
 
 1. Explorer
 2. Connect to remote > Open Folder
-3. Use the following path: /maps/projects/course_1/people/{ku-id}
+3. Use the following path: /maps/projects/course_2/people/{ku-id}
 
 # Command line basics
 
@@ -551,9 +551,6 @@ rule concat:
                 out.write(open(p).read())
 ```
 
-
-#### Child arguments
-
 ## Linking rules together
 
 One of Snakemake’s most powerful features is that you don’t need to manually tell it the order in which to run rules. Instead, Snakemake infers the correct sequence automatically by looking at:
@@ -603,9 +600,9 @@ snakemake -s mydirectory/mysnakefile.smk
 
 The computational exercises of the course will be conducted in the following project in Mjolnir:
 
-> /projects/course_1
+> /projects/course_2
 
-You can access it using `cd /projects/course_1` or visualise its contents using `ls -lah /projects/course_1`.
+You can access it using `cd /projects/course_2` or visualise its contents using `ls -lah /projects/course_2`.
 
 This directory contains four folders:
 
@@ -618,11 +615,11 @@ This directory contains four folders:
 
 This is the directory that can be accessed and edited by each user. All the computed files will be stored here. To access your directory you need to know your ku-id. 
 
-> /projects/course_1/people/{ku-id}
+> /projects/course_2/people/{ku-id}
 
 ## Raw data
 
 The raw data for the different studies that will be used in the course are found in different folders within the `data` director:
 
-> /projects/course_1/data/lizards
-> /projects/course_1/data/corvids
+> /projects/course_2/data/lizards
+> /projects/course_2/data/corvids

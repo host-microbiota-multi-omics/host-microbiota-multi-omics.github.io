@@ -1,4 +1,4 @@
-# Host genome {-}
+# Host genome
 
 This section reconstructs host genomic relationships from low-coverage genome skimming data—enough breadth to
 capture species- and population-level signals without full assemblies. We extract host-aligned reads, optionally
