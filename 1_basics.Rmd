@@ -292,14 +292,14 @@ SLURM then places your job in a queue and runs it when the requested resources b
 
 ```{sh eval=FALSE}
 # Submit a job to the SLURM scheduler
-sbatch -J {job_name} --partition=cpuqueue --qos=normal --cpus-per-task=12 --mem=8G --time=5:00:00 --wrap="{command_to_run}"
+sbatch -J {job_name} --partition=teaching --qos=teaching --cpus-per-task=12 --mem=8G --time=5:00:00 --wrap="{command_to_run}"
 
 # Shell file example
 cat > job_to_launch.sh << 'EOF'
 #!/bin/bash
 #SBATCH -J example_job
-#SBATCH --partition=cpuqueue
-#SBATCH --qos=normal
+#SBATCH --partition=teaching
+#SBATCH --qos=teaching
 #SBATCH --cpus-per-task=12
 #SBATCH --mem=8G
 #SBATCH --time=5:00:00 

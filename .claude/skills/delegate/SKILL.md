@@ -1,0 +1,30 @@
+---
+name: delegate
+description: Send one job to one specialist — a Claude subagent or a Codex job — without the full planning pipeline. Use when the user types /delegate or says "have Codex do X" / "ask the debugger to look at Y".
+argument-hint: [role] [claude|codex] <job>
+---
+
+# Delegate one job
+
+Request: $ARGUMENTS
+
+1. Pick the role and engine. If the user named them, use those. Otherwise choose from [../orchestrate/routing.md](../orchestrate/routing.md) and state the choice in one line.
+2. Write a self-contained brief: goal, context with `path:line`, constraints, acceptance check, out of scope. The specialist has none of your context. For work on the HPC, include the connection command and project folder from the chat's instructions; for a connected project, name its folder; for secrets, name the environment variables (and the HPC secrets file path, to `source`), never the values.
+   - HPC, network and secret-using work goes to a Claude role (the `hpc-operator` for the cluster). Codex jobs have no network and hide variables named KEY, SECRET or TOKEN.
+   - Google Docs, Sheets and Slides are edited by you or by a `general-purpose` subagent, not by a named role (their tool lists lack the connectors) and not by Codex.
+3. Announce the handoff in one line, then dispatch:
+   - Claude: Agent tool, `subagent_type: "<role>"`.
+   - Codex: Bash with `run_in_background: true`:
+     ```bash
+     .codeome/bin/codeome-agent codex --role <role> --title "<short title>" <<'BRIEF'
+     <brief>
+     BRIEF
+     ```
+     Never detach it by hand (`nohup`, trailing `&`, redirect to a log): that run gets no card in the chat, and a hook refuses it.
+4. When it returns, say in one line what came of it. Run the acceptance check yourself before reporting success, and show the user the Status line and the key findings.
+   For long parseable background runs, start `.codeome/bin/codeome-agent watch --log <log> --pid <pid> --parser <parser> --total <count> --label "<what>" --task <unique-key>` in the background with the command so its progress appears in chat; do not poll the log.
+   For HPC work, use `hpc-operator`; it can start `watch --parser slurm` for submitted jobs or `watch --parser snakemake --remote-log` for workflow logs.
+
+If the job is held back for usage (a Codex job exiting with code 75, or a denied Agent call that starts `Codeome: Claude account`), do not retry: offer the other engine, or tell the user which account is out and when it resets.
+
+Do not commit the result. If the job changed files, tell the user, and offer `/cross-review` before committing.

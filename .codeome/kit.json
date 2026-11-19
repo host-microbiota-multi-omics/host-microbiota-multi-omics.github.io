@@ -1,0 +1,41 @@
+{
+  "version": "0.9.4",
+  "groups": [
+    "core",
+    "research",
+    "web",
+    "release"
+  ],
+  "installedAt": "2026-11-16T14:10:17.369Z",
+  "files": {
+    ".claude/skills/cross-review/SKILL.md": "fbab9d238b6354be35a6205eb650e6fe84d7a6a40233963c0fc9ccc346ad742b",
+    ".claude/skills/delegate/SKILL.md": "34df91181f11c72ee5fc8cf1f3811c826262f031ed90d7fccf804534cf6f183d",
+    ".claude/skills/figures/SKILL.md": "2bc2c8dd94ff844bd2445c707d0f0007053e6a01a7dc3c33312758d0ffd54723",
+    ".claude/skills/figures/compose.py": "20b8dbbe8c231bd5b7d44ec587fae7591e85b854de9d0460ca1c641ec18b61cf",
+    ".claude/skills/orchestrate/SKILL.md": "d2d712027038cdb7ebe76da3ff5e328affc1f8e7ab7b578aed8097f27a0fb5de",
+    ".claude/skills/release/SKILL.md": "5dec72fd19bee8c4a67b671fd0c685a9ee417ed95b60fde5f85707aa9e431731",
+    ".claude/skills/release/bioconda.md": "174e13b1816ea90bb5831074b0416379f54fd9100bcc1ea0fafa5455ff13262f",
+    ".claude/skills/release/bioconductor.md": "4fe40ca2ac26b00f5e2df873c01af3a26cb9cb542acad84737b61631ca548842",
+    ".claude/skills/release/conda-forge.md": "752da5ab777f0b6f2f04720bc382abe282f23c9b2b64a23dfe76295802f89021",
+    ".claude/skills/release/cran.md": "d322718f0a9d213a0f4d1a2af160302ef92e7cd8d7d32007c1b9f5510a9905cc",
+    ".claude/skills/release/pypi.md": "a6ed6776366b2bc8cc4f4c6082b33df2c00ee64cc04c2442e97dd50de045e5dd",
+    ".claude/agents/analyst.md": "82691d49be3bc3790c900b29fe212bf3ae0abe1fcec2b1c9ca82af0922abf5f6",
+    ".claude/agents/backend.md": "34a31e4414866350c31157768894383f490002881d6092e946746307674d0f4d",
+    ".claude/agents/debugger.md": "1c1ff7cdcecb6f94dea913fc417bb7c3f63f64821f0627ce5ec9d836b1d18a20",
+    ".claude/agents/docs-writer.md": "3db111b40b2cfcf0b452c70d267aef3bf04eb7950507477114c0cc74101e34ff",
+    ".claude/agents/explorer.md": "0fafca144da740fd798ff97ee8768a51c65e747ccea18dcddc6254439ac71517",
+    ".claude/agents/figure-designer.md": "3bcc0b6f1f37fdedb2449681a4ddf22e492904f89ce607e1a2c4a49122323256",
+    ".claude/agents/frontend.md": "c456a0ba18b0188a3ab8a60bee014959bdceaf2b4870891ea17607de80b92427",
+    ".claude/agents/hpc-operator.md": "abb5f459237867beee6b227e195de675c5cf25be6b3cda5955e6b7adf84a732a",
+    ".claude/agents/implementer.md": "baa147b99971b042f1afa9101b39a83dfdf732826a68e7dbb8591e8462930d58",
+    ".claude/agents/pipeline-engineer.md": "01503df09eb71323c89e3623d53eb9950055d819e022b2ac2e4ec6ef102fd24f",
+    ".claude/agents/planner.md": "2007c3d12a5ac008f8c45316246cffaab92a07f3a5abfd4a7bba7a5c37c73e4c",
+    ".claude/agents/release-manager.md": "be9b32eeb319d500dbb65fed8035c84e0a32b61a123a7a7256f175ef3892d070",
+    ".claude/agents/report-writer.md": "26ccb09067b6e6d8c99bd5a4b6a6c40c846beef5b6c77690a69fffeb5623ae33",
+    ".claude/agents/reviewer.md": "d52ccd6dce52b254502f2b4ce1dc11e142904b96bf3b01ded3873cd48f0307b4",
+    ".claude/agents/security-reviewer.md": "6db303bf2d8b8a1e6ecdf2f67c053f58c163bfcfe99bb6d48f9dd38b1debea1b",
+    ".claude/agents/tester.md": "56464937e1b1740214f1c7bf26c36aec5a91f84df94b950c2965ff9e8c21ed6b",
+    ".claude/skills/orchestrate/routing.md": "08ff81be3f413d7f90e60ec76954734ca69fa4d1607c100d6a6a377d3b07ac4b",
+    ".codeome/bin/codeome-agent": "e5dd82e60aa455060f88b34c980b182ff0741c6f3b2a270b03ea93d046a2e323"
+  }
+}
